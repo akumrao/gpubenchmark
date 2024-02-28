@@ -1,0 +1,21 @@
+# gpu benchmark tools.
+
+## APP for benchmark of G ChipSet with OpenGL and Vulcan.
+
+## APP for benchmark of PDU, TPU and DPU. 
+
+## Shadder and Games Load. 
+
+## You can give run test case per your duration.
+
+## Statistics collection of Test with tuning clock frequency and  gpu memory.
+
+## Mailbox between Arm processor and GPU.
+
+
+
+
+adb shell settings put global verifier_verify_adb_installs 0
+
+$ adb install gpuload.apk
+
