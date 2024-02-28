@@ -464,7 +464,15 @@ JNI_OnLoad(JavaVM* vm, void* reserved)
         Log::error("JNI_OnLoad: glmark2 native registration failed\n");
         goto bail;
     }
-
+/*
+ *
+ * nt fd = open("/system/media/sdcard/jni.log", O_RDWR | O_APPEND |
+O_CREAT, 0666);
+if(fd > -1) {
+write(fd, str, strlen(str));
+write(fd, "\n", 1);
+close(fd);
+ */
     /* success -- return valid version number */
     result = JNI_VERSION_1_4;
 
