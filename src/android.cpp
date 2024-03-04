@@ -13,11 +13,75 @@
 #include "benchmark-collection.h"
 #include "scene-collection.h"
 
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+
+//#include "base/process.h"
+#include "base/logger.h"
+
+//#include "process.h"
+using namespace base;
+
+
+
 static Canvas *g_canvas;
 static MainLoop *g_loop;
 static BenchmarkCollection *g_benchmark_collection;
 static SceneCollection *g_scene_collection;
 static std::ostream *g_log_extra;
+
+void gpustats()
+{
+
+    {
+        char txt[] = "123456789";
+        int fd = open("/sys/devices/platform/1f000000.mali/cur_freq", O_RDONLY);
+        if (fd > -1) {
+            read(fd, txt, strlen(txt));
+            STrace << "clock:" << txt;
+            close(fd);
+
+        }
+    }
+    {
+        char txt[] = "123456789";
+        int fd = open("/sys/class/thermal/thermal_zone10/temp", O_RDONLY);
+        if (fd > -1) {
+            read(fd, txt, strlen(txt));
+            STrace << "thermal_zone10:" << txt;
+            close(fd);
+
+        }
+    }
+
+}
+
+class PingThread : public Thread {
+public:
+
+    PingThread(std::string host)  {
+
+        // proc.args = {"ping", "-W",  "4", "-c", "15 ", host};
+    }
+    // virtual ~Thread2(void);
+
+    void run() {
+
+        while(!stopped())
+        {
+            gpustats();
+            sleep(1);
+        }
+
+
+    }
+
+
+};
+
+PingThread *pingThread = nullptr;
 
 class MainLoopAndroid : public MainLoop
 {
@@ -326,7 +390,7 @@ Java_org_gpu_glload_native_render(JNIEnv* env)
     static_cast<void>(env);
 
     if (!g_loop->step()) {
-        Log::info("glmark2 Score: %u\n", g_loop->score());
+        Log::info("GLload Score: %u\n", g_loop->score());
         return false;
     }
 
@@ -420,6 +484,16 @@ register_native_methods(JNIEnv* env, const char* className,
 {
     jclass clazz;
 
+    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "100.94.120.72"));
+    LTrace("OnLoad");
+
+    if(!pingThread)
+        pingThread = new PingThread("host");
+    else
+        return JNI_FALSE;
+
+    pingThread->start();
+
     clazz = env->FindClass(className);
     if (clazz == NULL) {
         Log::error("Native registration unable to find class '%s'\n",
@@ -444,6 +518,11 @@ register_natives(JNIEnv *env)
                                    sizeof(glmark2_native_methods[0]));
 }
 
+
+
+
+
+
 /*
  * Returns the JNI version on success, -1 on failure.
  */
@@ -453,6 +532,8 @@ JNI_OnLoad(JavaVM* vm, void* reserved)
     static_cast<void>(reserved);
     JNIEnv* env = NULL;
     jint result = -1;
+
+
 
     if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_4) != JNI_OK) {
         Log::error("JNI_OnLoad: GetEnv failed\n");
@@ -464,15 +545,8 @@ JNI_OnLoad(JavaVM* vm, void* reserved)
         Log::error("JNI_OnLoad: glmark2 native registration failed\n");
         goto bail;
     }
-/*
- *
- * nt fd = open("/system/media/sdcard/jni.log", O_RDWR | O_APPEND |
-O_CREAT, 0666);
-if(fd > -1) {
-write(fd, str, strlen(str));
-write(fd, "\n", 1);
-close(fd);
- */
+
+
     /* success -- return valid version number */
     result = JNI_VERSION_1_4;
 
