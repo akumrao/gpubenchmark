@@ -42,6 +42,7 @@ android {
         ndkBuild {
             path "src/main/jni/Android.mk"
         }
+
     }
 
 
@@ -61,8 +62,21 @@ android {
             signingConfig signingConfigs.sign
         }
         debug {
+
             applicationIdSuffix ".debug"
             signingConfig signingConfigs.debug
+
+            debuggable true
+            initWith debug
+            jniDebuggable true
+            renderscriptDebuggable true
+
+            externalNativeBuild {
+                ndkBuild {
+                    cFlags "-DDEBUG=1"
+                }
+            }
+
         }
     }
 

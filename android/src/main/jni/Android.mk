@@ -8,7 +8,7 @@ APP_CPPFLAGS += -fexceptions
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := libMedia
-LOCAL_CFLAGS :=   -Wall -Wextra -fexceptions
+LOCAL_CFLAGS :=   -Wall -Wextra -fexceptions -g -DDEBUG=1
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/src/mediaserver/src/base/include \
                     $(LOCAL_PATH)/src/mediaserver/src/net/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/include \
@@ -26,7 +26,7 @@ include $(CLEAR_VARS)
 
 
 LOCAL_MODULE := libglmark2-matrix
-LOCAL_CFLAGS := -DGPULOAD_USE_GLESv2 -Wall -Wextra -fexceptions \
+LOCAL_CFLAGS := -DGPULOAD_USE_GLESv2 -Wall -Wextra -fexceptions -g -DDEBUG=1 \
                 -Wno-error=unused-parameter
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \
                     $(LOCAL_PATH)/src/glad/include \
@@ -49,7 +49,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := libglmark2-jpeg
 LOCAL_CFLAGS := -Werror -Wall -Wextra -Wno-error=attributes \
-                -Wno-error=unused-parameter -Wno-error=unused-function -Wno-error=unused-variable
+                -Wno-error=unused-parameter -Wno-error=unused-function -Wno-error=unused-variable -g -DDEBUG=1
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/src/libjpeg-turbo/
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcapimin.c)) \
                    $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcapistd.c)) \
@@ -102,8 +102,8 @@ include $(CLEAR_VARS)
 
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_MODULE := libglmark2-ideas
-LOCAL_CFLAGS := -DGPULOAD_DATA_PATH="" -DGPULOAD_USE_GLESv2 -Werror -Wall -Wextra\
-                -Wnon-virtual-dtor -Wno-error=unused-parameter
+LOCAL_CFLAGS := -DGPULOAD_DATA_PATH="" -DGPULOAD_USE_GLESv2 -Werror -Wall -Wextra -g \
+                -Wnon-virtual-dtor -Wno-error=unused-parameter -DDEBUG=1
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \
                     $(LOCAL_PATH)/src/libmatrix \
                     $(LOCAL_PATH)/src/glad/include
@@ -119,7 +119,7 @@ include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libglad-glesv2
-LOCAL_CFLAGS := -Werror -Wall
+LOCAL_CFLAGS := -Werror -Wall -g
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/src/glad/include
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/glad/src/gles2.c))
 include $(BUILD_STATIC_LIBRARY)
@@ -129,7 +129,7 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := libglmark2-android
 LOCAL_STATIC_LIBRARIES := libMedia libglmark2-matrix libglmark2-png libglmark2-ideas libglmark2-jpeg libglad-egl libglad-glesv2
 LOCAL_CFLAGS := -DGPULOAD_DATA_PATH="" -DGPULOAD_VERSION="\"2021.12\"" \
-                -DGPULOAD_USE_GLESv2 -Wno-error -Wall -Wextra  \
+                -DGPULOAD_USE_GLESv2 -Wno-error -Wall -Wextra -g  -DDEBUG=1 \
                 -Wno-error=unused-parameter
 LOCAL_LDLIBS := -landroid -llog -lz
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \

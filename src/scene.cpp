@@ -11,6 +11,79 @@ using std::stringstream;
 using std::string;
 using std::map;
 
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "base/logger.h"
+using namespace base;
+
+void gpustats()
+{
+    static int nCount= 0;
+    if(nCount == 180)
+    {
+        nCount = 1;
+    }
+    else if( nCount++ > 0 )
+    {
+        return;
+    }
+
+    {
+        char txt[32] = {'\0'};
+        int fd = open("/sys/devices/platform/1f000000.mali/cur_freq", O_RDONLY);
+        if (fd > -1) {
+            read(fd, txt, 32);
+            STrace << "clock:" << txt;
+            close(fd);
+
+        }
+    }
+
+    {
+        char txt[32] = {'\0'};
+        int fd = open("/sys/devices/platform/1f000000.mali/utilization", O_RDONLY);
+        if (fd > -1) {
+            read(fd, txt, 32);
+            STrace << "utilization:" << txt;
+            close(fd);
+
+        }
+    }
+
+    {
+        char txt[32] = {'\0'};
+        int fd = open("/sys/class/thermal/thermal_zone10/temp", O_RDONLY);
+        if (fd > -1) {
+            read(fd, txt, 32);
+            STrace << "thermal_zone10:" << txt;
+            close(fd);
+
+        }
+    }
+
+
+}
+
+
+
+void gpuinit()
+{
+
+    {
+        char txt[512] = {'\0'};
+        int fd = open("/sys/devices/platform/1f000000.mali/clock_info", O_RDONLY);
+        if (fd > -1) {
+            read(fd, txt, 511);
+            STrace << "clock_info:" << txt;
+            close(fd);
+
+        }
+    }
+
+}
+
 Scene::Option::Option(const std::string &nam, const std::string &val, const std::string &desc,
                       const std::string &values) :
 name(nam), value(val), default_value(val), description(desc), set(false)
@@ -268,4 +341,18 @@ Scene::load_shaders_from_strings(Program &program,
     }
 
     return true;
+}
+
+void Scene::statsInit()
+{
+    Log::info("statsInit");
+    gpuinit();
+}
+void Scene::statsRun()
+{
+    gpustats();
+}
+void Scene::statsStop(){
+    Log::info("statsStop");
+    gpuinit();
 }

@@ -28,6 +28,11 @@
 #include <unistd.h>
 #endif
 
+#include "base/logger.h"
+using namespace base;
+
+
+
 using std::string;
 
 const string Log::continuation_prefix("\x10");
@@ -93,6 +98,7 @@ print_prefixed_message(std::ostream& stream, const string& color, const string& 
             /* Normal line, emit the prefix. */
             stream << linePrefix << line;
         }
+         STrace << line << std::endl;
 
         /* Only emit a newline if the original message has it. */
         if (!(ss.rdstate() & std::stringstream::eofbit))

@@ -106,6 +106,10 @@ public:
      */
     virtual void draw();
 
+    virtual void statsInit();
+    virtual void statsRun();
+    virtual void statsStop();
+
     /**
      * Gets an informational string describing the scene.
      *

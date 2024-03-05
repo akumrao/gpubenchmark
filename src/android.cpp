@@ -13,10 +13,7 @@
 #include "benchmark-collection.h"
 #include "scene-collection.h"
 
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
+
 
 //#include "base/process.h"
 #include "base/logger.h"
@@ -32,60 +29,7 @@ static BenchmarkCollection *g_benchmark_collection;
 static SceneCollection *g_scene_collection;
 static std::ostream *g_log_extra;
 
-void gpustats()
-{
 
-    {
-        char txt[32] = {'\0'};
-        int fd = open("/sys/devices/platform/1f000000.mali/cur_freq", O_RDONLY);
-        if (fd > -1) {
-            read(fd, txt, 32);
-            STrace << "clock:" << txt;
-            close(fd);
-
-        }
-    }
-
-    {
-        char txt[32] = {'\0'};
-        int fd = open("/sys/devices/platform/1f000000.mali/utilization", O_RDONLY);
-        if (fd > -1) {
-            read(fd, txt, 32);
-            STrace << "utilization:" << txt;
-            close(fd);
-
-        }
-    }
-
-    {
-        char txt[32] = {'\0'};
-        int fd = open("/sys/class/thermal/thermal_zone10/temp", O_RDONLY);
-        if (fd > -1) {
-            read(fd, txt, 32);
-            STrace << "thermal_zone10:" << txt;
-            close(fd);
-
-        }
-    }
-
-}
-
-
-
-void gpuinit()
-{
-    {
-        char txt[512] = {'\0'};
-        int fd = open("/sys/devices/platform/1f000000.mali/clock_info", O_RDONLY);
-        if (fd > -1) {
-            read(fd, txt, 511);
-            STrace << "clock_info:" << txt;
-            close(fd);
-
-        }
-    }
-
-}
 
 class PingThread : public Thread {
 public:
@@ -94,9 +38,9 @@ public:
 
         STrace << "Stats at Start of APP";
 
-        gpuinit();
+       // gpuinit();
 
-        gpustats();
+       // gpustats();
 
     }
     // virtual ~Thread2(void);
@@ -107,7 +51,7 @@ public:
 
         while(!stopped())
         {
-            gpustats();
+           // gpustats();
             sleep(1);
         }
 
@@ -528,7 +472,7 @@ register_native_methods(JNIEnv* env, const char* className,
     else
         return JNI_FALSE;
 
-    pingThread->start();
+    //pingThread->start();
 
     clazz = env->FindClass(className);
     if (clazz == NULL) {

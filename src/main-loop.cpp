@@ -51,7 +51,10 @@ MainLoop::step()
              * Just set them up and continue with the search.
              */
             if (scene_->name().empty())
+            {
                 (*bench_iter_)->setup_scene();
+                scene_->statsInit();
+            }
             else
                 break;
 
@@ -97,6 +100,7 @@ MainLoop::step()
             benchmarks_run_++;
         }
         log_scene_result();
+        scene_->statsStop();
         (*bench_iter_)->teardown_scene();
         scene_ = 0;
         next_benchmark();
@@ -109,6 +113,8 @@ void
 MainLoop::draw()
 {
     canvas_.clear();
+
+    scene_->statsRun();
 
     scene_->draw();
     scene_->update();
