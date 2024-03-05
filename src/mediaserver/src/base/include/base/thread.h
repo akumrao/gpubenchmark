@@ -11,7 +11,7 @@
 
 
 #ifdef ANDROID
-#define __linux__ ANDROID
+//#define __linux__ ANDROID
 #endif
 
 #if defined (WIN32) || defined(_WIN32)
@@ -48,7 +48,7 @@ namespace base
     {
     public:
 
-        Thread() : isrunning_(false), exit(false) { }
+        Thread() :  exit(false),isrunning_(false) { }
         virtual ~Thread(void);
 
         virtual void start(entry fun, void* arg) {

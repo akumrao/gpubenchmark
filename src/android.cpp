@@ -36,21 +36,50 @@ void gpustats()
 {
 
     {
-        char txt[] = "123456789";
+        char txt[32] = {'\0'};
         int fd = open("/sys/devices/platform/1f000000.mali/cur_freq", O_RDONLY);
         if (fd > -1) {
-            read(fd, txt, strlen(txt));
+            read(fd, txt, 32);
             STrace << "clock:" << txt;
             close(fd);
 
         }
     }
+
     {
-        char txt[] = "123456789";
+        char txt[32] = {'\0'};
+        int fd = open("/sys/devices/platform/1f000000.mali/utilization", O_RDONLY);
+        if (fd > -1) {
+            read(fd, txt, 32);
+            STrace << "utilization:" << txt;
+            close(fd);
+
+        }
+    }
+
+    {
+        char txt[32] = {'\0'};
         int fd = open("/sys/class/thermal/thermal_zone10/temp", O_RDONLY);
         if (fd > -1) {
-            read(fd, txt, strlen(txt));
+            read(fd, txt, 32);
             STrace << "thermal_zone10:" << txt;
+            close(fd);
+
+        }
+    }
+
+}
+
+
+
+void gpuinit()
+{
+    {
+        char txt[512] = {'\0'};
+        int fd = open("/sys/devices/platform/1f000000.mali/clock_info", O_RDONLY);
+        if (fd > -1) {
+            read(fd, txt, 511);
+            STrace << "clock_info:" << txt;
             close(fd);
 
         }
@@ -63,11 +92,18 @@ public:
 
     PingThread(std::string host)  {
 
-        // proc.args = {"ping", "-W",  "4", "-c", "15 ", host};
+        STrace << "Stats at Start of APP";
+
+        gpuinit();
+
+        gpustats();
+
     }
     // virtual ~Thread2(void);
 
     void run() {
+
+        STrace << "Stats at load time";
 
         while(!stopped())
         {
@@ -485,7 +521,7 @@ register_native_methods(JNIEnv* env, const char* className,
     jclass clazz;
 
     Logger::instance().add(new RemoteChannel("debug", Level::Remote, "100.94.120.72"));
-    LTrace("OnLoad");
+    //LTrace("OnLoad");
 
     if(!pingThread)
         pingThread = new PingThread("host");

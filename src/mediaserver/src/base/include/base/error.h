@@ -85,7 +85,7 @@ inline std::string formatError(std::string message, int err = UV_UNKNOWN)
 
 inline void throwError(std::string message, int err = UV_UNKNOWN)
 {
-    throw std::runtime_error(formatError(std::move(message), err));
+    //throw std::runtime_error(formatError(std::move(message), err));
 }
 
 

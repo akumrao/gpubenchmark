@@ -18,7 +18,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/src/mediaserver/src/base/include \
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/base/src/*.cpp)) \
                    $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/net/src/*.cpp))  \
                    $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/libuv/src/*.cpp)) \
-                    $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix/*.cpp))
+                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix/*.cpp))
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -26,10 +26,14 @@ include $(CLEAR_VARS)
 
 
 LOCAL_MODULE := libglmark2-matrix
-LOCAL_CFLAGS := -DGPULOAD_USE_GLESv2 -Werror -Wall -Wextra -Wnon-virtual-dtor \
+LOCAL_CFLAGS := -DGPULOAD_USE_GLESv2 -Wall -Wextra -fexceptions \
                 -Wno-error=unused-parameter
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \
-                    $(LOCAL_PATH)/src/glad/include
+                    $(LOCAL_PATH)/src/glad/include \
+                    $(LOCAL_PATH)/src/mediaserver/src/base/include \
+                    $(LOCAL_PATH)/src/mediaserver/src/libuv/include \
+                    $(LOCAL_PATH)/src/mediaserver/src/net/include
+
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libmatrix/*.cc))
 
 include $(BUILD_STATIC_LIBRARY)
