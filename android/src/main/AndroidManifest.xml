@@ -25,14 +25,8 @@
         </activity>
         <activity
             android:name="org.gpu.glload.GlloadActivity"
-            android:label="@string/title_activity_glmark2"
-            android:process=":glmark2"
-            android:screenOrientation="nosensor"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
+            android:label="@string/title_activity_glmark2">
+
         </activity>
         <activity
             android:name="org.gpu.glload.MainPreferencesActivity"
