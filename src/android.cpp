@@ -66,8 +66,8 @@ PingThread *pingThread = nullptr;
 class MainLoopAndroid : public MainLoop
 {
 public:
-    MainLoopAndroid(Canvas &canvas, const std::vector<Benchmark *> &benchmarks) :
-        MainLoop(canvas, benchmarks) {}
+    MainLoopAndroid(Canvas &canvas, const std::vector<Benchmark *> &benchmarks, Config &config) :
+        MainLoop(canvas, benchmarks,config ) {}
 
     virtual void log_scene_info() {}
 
@@ -93,8 +93,8 @@ public:
 class MainLoopDecorationAndroid : public MainLoopDecoration
 {
 public:
-    MainLoopDecorationAndroid(Canvas &canvas, const std::vector<Benchmark *> &benchmarks) :
-        MainLoopDecoration(canvas, benchmarks) {}
+    MainLoopDecorationAndroid(Canvas &canvas, const std::vector<Benchmark *> &benchmarks , Config &config) :
+        MainLoopDecoration(canvas, benchmarks, config) {}
 
     virtual void log_scene_info() {}
 
@@ -331,11 +331,11 @@ Java_org_gpu_glload_native_init(JNIEnv* env, jclass clazz,
 
     if (g_benchmark_collection->needs_decoration()) {
         g_loop = new MainLoopDecorationAndroid(*g_canvas,
-                                               g_benchmark_collection->benchmarks());
+                                               g_benchmark_collection->benchmarks(),g_benchmark_collection->config);
     }
     else {
         g_loop = new MainLoopAndroid(*g_canvas,
-                                     g_benchmark_collection->benchmarks());
+                                     g_benchmark_collection->benchmarks() ,g_benchmark_collection->config );
     }
 }
 

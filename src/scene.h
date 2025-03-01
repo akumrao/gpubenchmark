@@ -15,6 +15,8 @@
 #include <list>
 #include <vector>
 #include "canvas.h"
+#include "default-benchmarks.h"
+
 
 /**
  * A configurable scene used for creating benchmarks.
@@ -106,8 +108,8 @@ public:
      */
     virtual void draw();
 
-    virtual void statsInit();
-    virtual void statsRun();
+    virtual void statsInit(Config & config);
+    virtual void statsRun(Config & config);
     virtual void statsStop();
 
     /**

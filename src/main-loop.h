@@ -14,7 +14,7 @@
 class MainLoop
 {
 public:
-    MainLoop(Canvas &canvas, const std::vector<Benchmark *> &benchmarks);
+    MainLoop(Canvas &canvas, const std::vector<Benchmark *> &benchmarks,  Config &config);
 
     virtual ~MainLoop() {}
 
@@ -79,6 +79,10 @@ protected:
     SceneSetupStatus scene_setup_status_;
 
     std::vector<Benchmark *>::const_iterator bench_iter_;
+
+public:
+
+    Config & config;
 };
 
 /**
@@ -87,7 +91,7 @@ protected:
 class MainLoopDecoration : public MainLoop
 {
 public:
-    MainLoopDecoration(Canvas &canvas, const std::vector<Benchmark *> &benchmarks);
+    MainLoopDecoration(Canvas &canvas, const std::vector<Benchmark *> &benchmarks, Config &config);
     virtual ~MainLoopDecoration();
 
     virtual void draw();
@@ -112,7 +116,7 @@ protected:
 class MainLoopValidation : public MainLoop
 {
 public:
-    MainLoopValidation(Canvas &canvas, const std::vector<Benchmark *> &benchmarks);
+    MainLoopValidation(Canvas &canvas, const std::vector<Benchmark *> &benchmarks, Config &config);
 
     virtual void draw();
     virtual void log_scene_result();

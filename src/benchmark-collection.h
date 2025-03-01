@@ -29,6 +29,7 @@ public:
 
     const std::vector<Benchmark *>& benchmarks() { return benchmarks_; }
 
+    Config config;
 private:
     void add_benchmarks_from_files();
     bool benchmarks_contain_normal_scenes();

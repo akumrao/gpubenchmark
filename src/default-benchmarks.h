@@ -4,22 +4,34 @@
 
 #include <string>
 #include <vector>
+#include <scene.h>
+
+struct Config
+{
+    /* duration of interval */
+    int interval{200};
+    /* 30 seconds duration of test */
+    int duration{30};
+    std::string temp{"/sys/class/thermal/thermal_zone10/temp"};
+
+};
+
 
 class DefaultBenchmarks
 {
 public:
-    static const std::vector<std::string>& get()
+    static const std::vector<std::string>& get(Config &config)
     {
         static std::vector<std::string> default_benchmarks;
 
         if (default_benchmarks.empty())
-            populate(default_benchmarks);
+            populate(default_benchmarks, config);
 
         return default_benchmarks;
     }
 
 private:
-    static void populate(std::vector<std::string>& benchmarks)
+    static void populate(std::vector<std::string>& benchmarks, Config &config)
     {
         benchmarks.push_back("build:use-vbo=false");
         benchmarks.push_back("build:use-vbo=true");

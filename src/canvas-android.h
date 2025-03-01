@@ -35,6 +35,8 @@ private:
     SharedLibrary gles_lib_;
     GLVisualConfig chosen_config_;
 
+    int nCount{0};
+
     static GLADapiproc load_proc(void *userdata, const char *name);
     void init_gl_extensions();
 };

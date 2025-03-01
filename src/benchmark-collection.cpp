@@ -38,7 +38,7 @@ BenchmarkCollection::populate_from_options()
         add_benchmarks_from_files();
 
     if (!benchmarks_contain_normal_scenes())
-        add(DefaultBenchmarks::get());
+        add(DefaultBenchmarks::get(config));
 }
 
 bool

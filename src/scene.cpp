@@ -18,7 +18,7 @@ using std::map;
 #include "base/logger.h"
 using namespace base;
 
-void gpustats()
+void gpustats(Config & config)
 {
     static int nCount= 0;
     if(nCount == 180)
@@ -54,7 +54,7 @@ void gpustats()
 
     {
         char txt[32] = {'\0'};
-        int fd = open("/sys/class/thermal/thermal_zone10/temp", O_RDONLY);
+        int fd = open(config.temp, O_RDONLY);
         if (fd > -1) {
             read(fd, txt, 32);
             STrace << "thermal_zone10:" << txt;
@@ -68,7 +68,7 @@ void gpustats()
 
 
 
-void gpuinit()
+void gpuinit( Config & config)
 {
 
     {
@@ -343,16 +343,16 @@ Scene::load_shaders_from_strings(Program &program,
     return true;
 }
 
-void Scene::statsInit()
+void Scene::statsInit(Config & config)
 {
     Log::info("statsInit");
-    gpuinit();
+    gpuinit(config);
 }
-void Scene::statsRun()
+void Scene::statsRun(Config & config)
 {
-    gpustats();
+    gpustats( config );
 }
 void Scene::statsStop(){
     Log::info("statsStop");
-    gpuinit();
+   // gpuinit(config);
 }

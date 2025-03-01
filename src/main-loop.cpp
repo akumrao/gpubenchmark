@@ -11,8 +11,8 @@
  * MainLoop *
  ************/
 
-MainLoop::MainLoop(Canvas &canvas, const std::vector<Benchmark *> &benchmarks) :
-    canvas_(canvas), benchmarks_(benchmarks)
+MainLoop::MainLoop(Canvas &canvas, const std::vector<Benchmark *> &benchmarks, Config &config) :
+    canvas_(canvas), benchmarks_(benchmarks), config(config)
 {
     reset();
 }
@@ -53,7 +53,7 @@ MainLoop::step()
             if (scene_->name().empty())
             {
                 (*bench_iter_)->setup_scene();
-                scene_->statsInit();
+                scene_->statsInit(  config);
             }
             else
                 break;
@@ -114,7 +114,7 @@ MainLoop::draw()
 {
     canvas_.clear();
 
-    scene_->statsRun();
+    scene_->statsRun(config);
 
     scene_->draw();
     scene_->update();
@@ -163,8 +163,8 @@ MainLoop::next_benchmark()
  * MainLoopDecoration *
  **********************/
 
-MainLoopDecoration::MainLoopDecoration(Canvas &canvas, const std::vector<Benchmark *> &benchmarks) :
-    MainLoop(canvas, benchmarks), show_fps_(false), show_title_(false),
+MainLoopDecoration::MainLoopDecoration(Canvas &canvas, const std::vector<Benchmark *> &benchmarks, Config &config) :
+    MainLoop(canvas, benchmarks, config), show_fps_(false), show_title_(false),
     fps_renderer_(0), title_renderer_(0), last_fps_(0)
 {
 
@@ -277,8 +277,8 @@ MainLoopDecoration::vec2_from_pos_string(const std::string &s)
  * MainLoopValidation *
  **********************/
 
-MainLoopValidation::MainLoopValidation(Canvas &canvas, const std::vector<Benchmark *> &benchmarks) :
-        MainLoop(canvas, benchmarks)
+MainLoopValidation::MainLoopValidation(Canvas &canvas, const std::vector<Benchmark *> &benchmarks, Config &config) :
+        MainLoop(canvas, benchmarks, config )
 {
 }
 
