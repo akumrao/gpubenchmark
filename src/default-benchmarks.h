@@ -5,15 +5,18 @@
 #include <string>
 #include <vector>
 #include <scene.h>
+#include <util.h>
 
 struct Config
 {
-    /* duration of interval */
+    /* duration of interval in millsecond */
     int interval{200};
     /* 30 seconds duration of test */
     int duration{30};
     std::string temp{"/sys/class/thermal/thermal_zone10/temp"};
 
+    uint64_t starttime;
+    uint64_t curenttime{0};
 };
 
 
@@ -33,6 +36,8 @@ public:
 private:
     static void populate(std::vector<std::string>& benchmarks, Config &config)
     {
+        config.starttime = Util::get_timestamp_us();
+
         benchmarks.push_back("build:use-vbo=false");
         benchmarks.push_back("build:use-vbo=true");
         benchmarks.push_back("texture:texture-filter=nearest");

@@ -20,15 +20,7 @@ using namespace base;
 
 void gpustats(Config & config)
 {
-    static int nCount= 0;
-    if(nCount == 180)
-    {
-        nCount = 1;
-    }
-    else if( nCount++ > 0 )
-    {
-        return;
-    }
+
 
     {
         char txt[32] = {'\0'};
@@ -54,7 +46,7 @@ void gpustats(Config & config)
 
     {
         char txt[32] = {'\0'};
-        int fd = open(config.temp, O_RDONLY);
+        int fd = open(config.temp.c_str(), O_RDONLY);
         if (fd > -1) {
             read(fd, txt, 32);
             STrace << "thermal_zone10:" << txt;
@@ -223,7 +215,7 @@ Scene::set_option(const string &opt, const string &val)
 
     std::vector<std::string> &values(iter->second.acceptable_values);
 
-    if (!values.empty() && 
+    if (!values.empty() &&
         std::find(values.begin(), values.end(), val) == values.end())
     {
             return false;
@@ -259,7 +251,7 @@ Scene::set_option_default(const string &opt, const string &val)
 
     std::vector<std::string> &values(iter->second.acceptable_values);
 
-    if (!values.empty() && 
+    if (!values.empty() &&
         std::find(values.begin(), values.end(), val) == values.end())
     {
             return false;
@@ -350,7 +342,21 @@ void Scene::statsInit(Config & config)
 }
 void Scene::statsRun(Config & config)
 {
-    gpustats( config );
+    uint64_t curenttime= Util::get_timestamp_us();
+
+    if( curenttime <   config.starttime + (uint64_t) config.duration*1000000) {
+        if( uint64_t(curenttime - config.curenttime) > uint64_t(config.interval*1000) ) {
+            gpustats(config);
+            config.curenttime= curenttime;
+        }
+        else
+        {
+            int x = 0;
+        }
+    }
+    else
+        running_ =false;
+
 }
 void Scene::statsStop(){
     Log::info("statsStop");
