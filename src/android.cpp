@@ -316,6 +316,7 @@ Java_org_gpu_glload_native_init(JNIEnv* env, jclass clazz,
     Log::init("glmark2", Options::show_debug, g_log_extra);
     Util::android_set_asset_manager(AAssetManager_fromJava(env, asset_manager));
 
+    //g_canvas = new CanvasAndroid(1000000, 1000000);
     g_canvas = new CanvasAndroid(100, 100);
     g_canvas->init();
 

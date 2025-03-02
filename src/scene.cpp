@@ -49,7 +49,7 @@ void gpustats(Config & config)
         int fd = open(config.temp.c_str(), O_RDONLY);
         if (fd > -1) {
             read(fd, txt, 32);
-            STrace << "thermal_zone10:" << txt;
+            STrace << "thermal:" << txt;
             close(fd);
 
         }
@@ -141,6 +141,9 @@ bool
 Scene::setup()
 {
     duration_ = Util::fromString<double>(options_["duration"].value);
+
+  //  duration_ = 10000;
+
     nframes_ = Util::fromString<unsigned>(options_["nframes"].value);
 
     ShaderSource::default_precision(
