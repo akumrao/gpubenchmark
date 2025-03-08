@@ -17,6 +17,10 @@ struct Config
 
     uint64_t starttime;
     uint64_t curenttime{0};
+
+    int widthCanvas{100};
+    int heightCanvas{100};
+
 };
 
 
