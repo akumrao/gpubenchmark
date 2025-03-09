@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <android/asset_manager_jni.h>
 
 const Vertex QUAD[4] = {
     // Square with diagonal < 2 so that it fits in a [-1 .. 1]^2 square
@@ -229,7 +230,7 @@ static Renderer* g_renderer = NULL;
 
 extern "C" {
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_init(JNIEnv* env,
-                                                                  jobject obj);
+                                                                  jobject obj,  jobject assetManager);
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_resize(
     JNIEnv* env, jobject obj, jint width, jint height);
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_step(JNIEnv* env,
@@ -241,11 +242,20 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 #endif
 
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_init(JNIEnv* env,
-                                                                  jobject obj) {
+                                                                  jobject obj,  jobject assetManager) {
+
+
+
+
   if (g_renderer) {
     delete g_renderer;
     g_renderer = NULL;
   }
+
+
+
+    AAssetManager *android_asset_manager   = AAssetManager_fromJava(env, assetManager);
+
 
   printGlString("Version", GL_VERSION);
   printGlString("Vendor", GL_VENDOR);
@@ -254,9 +264,13 @@ JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_init(JNIEnv* env,
 
   const char* versionStr = (const char*)glGetString(GL_VERSION);
   if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-    g_renderer = createES3Renderer();
+    g_renderer = createES3Renderer(android_asset_manager);
+
+
+
+
   } else if (strstr(versionStr, "OpenGL ES 2.")) {
-    g_renderer = createES2Renderer();
+   // g_renderer = createES2Renderer();
   } else {
     ALOGE("Unsupported OpenGL ES version");
   }

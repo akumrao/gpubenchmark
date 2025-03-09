@@ -1,34 +1,11 @@
-
-/*
 #version 300 es
-
-layout(location = 0) in vec2 position;
-uniform mat4 projection;
-out vec4 vertexColor;
-
+layout(location = 0) in vec2 pos;
+layout(location=1) in vec4 color;
+layout(location=2) in vec4 scaleRot;
+layout(location=3) in vec2 offset;
+out vec4 vColor;
 void main() {
-    vec4 rhsPosition = projection * vec4(position, 0.0, 1.0);
-
-    if (rhsPosition.x < -0.5) {
-        vertexColor = vec4(1.0, 0.0, 0.0, 1.0); // Red
-    } else if (rhsPosition.x >= -0.5 && rhsPosition.x <= 0.5) {
-        vertexColor = vec4(0.0, 1.0, 0.0, 1.0); // Green
-    } else {
-        vertexColor = vec4(0.0, 0.0, 1.0, 1.0); // Blue
-    }
-
-    gl_Position = rhsPosition;
-    gl_PointSize = 100.0;
-}
-
-*/
-
-precision highp float;
-attribute vec4 inPosition;
-
-void main()
-{
-
-
-     gl_Position = inPosition;
+    mat2 sr = mat2(scaleRot.xy, scaleRot.zw);
+    gl_Position = vec4(sr*pos + offset, 0.0, 1.0);
+    vColor = color;
 }

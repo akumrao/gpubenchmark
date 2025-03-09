@@ -18,6 +18,11 @@
 
 #include "gles3jni.h"
 
+#include <string>
+#include <sstream>
+
+
+
 #define STR(s) #s
 #define STRV(s) STR(s)
 
@@ -54,6 +59,15 @@ class RendererES3 : public Renderer {
   virtual ~RendererES3();
   bool init();
 
+
+
+
+    std::istream * get_resource(const std::string &path);
+    bool load_file(const std::string& filename, std::string& str);
+
+
+
+
  private:
   enum { VB_INSTANCE, VB_SCALEROT, VB_OFFSET, VB_COUNT };
 
@@ -69,8 +83,9 @@ class RendererES3 : public Renderer {
   GLuint mVBState;
 };
 
-Renderer* createES3Renderer() {
+Renderer* createES3Renderer(AAssetManager *android_asset_manager ) {
   RendererES3* renderer = new RendererES3;
+    renderer->android_asset_manager = android_asset_manager;
   if (!renderer->init()) {
     delete renderer;
     return NULL;
@@ -84,7 +99,30 @@ RendererES3::RendererES3()
 }
 
 bool RendererES3::init() {
-  mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+
+
+
+
+    std::string vshad = "vertex_shader.glsl";
+    std::string fshad = "fragment_shader.glsl";
+    std::string vshaderBuf;
+    std::string fshaderBuf;
+
+    bool vs = load_file(vshad, vshaderBuf);
+    bool fs = load_file(fshad, fshaderBuf);
+
+    ALOGE("GL vshaderBuf after %s: \n", VERTEX_SHADER);
+    ALOGE("GL fshaderBuf after %s: \n", vshaderBuf.c_str());
+
+    ALOGE("GL vshaderBuf after %s: \n", FRAGMENT_SHADER);
+    ALOGE("GL fshaderBuf after %s: \n", fshaderBuf.c_str());
+
+
+    //mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+
+    mProgram = createProgram(vshaderBuf.c_str(), fshaderBuf.c_str());
+
+
   if (!mProgram) return false;
 
   glGenBuffers(VB_COUNT, mVB);
@@ -159,4 +197,53 @@ void RendererES3::draw(unsigned int numInstances) {
   glUseProgram(mProgram);
   glBindVertexArray(mVBState);
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, numInstances);
+}
+
+
+
+
+
+
+
+std::istream * RendererES3::get_resource(const std::string &path)
+{
+    std::string path2(path);
+    /* Remove leading '/' from path name, it confuses the AssetManager */
+    if (path2.size() > 0 && path2[0] == '/')
+        path2.erase(0, 1);
+
+    std::stringstream *ss = new std::stringstream;
+    AAsset *asset = AAssetManager_open(android_asset_manager,    path2.c_str(), AASSET_MODE_RANDOM);
+    if (asset) {
+        ss->write(reinterpret_cast<const char *>(AAsset_getBuffer(asset)),
+                  AAsset_getLength(asset));
+
+        AAsset_close(asset);
+    }
+    else {
+        //Log::error("Couldn't load asset %s\n", path2.c_str());
+    }
+
+    return static_cast<std::istream *>(ss);
+}
+
+bool RendererES3::load_file(const std::string& filename, std::string& str)
+{
+    std::unique_ptr<std::istream> is_ptr(get_resource(filename));
+    std::istream& inputFile(*is_ptr);
+
+    if (!inputFile)
+    {
+        //Log::error("Failed to open \"%s\"\n", filename.c_str());
+        return false;
+    }
+
+    std::string curLine;
+    while (getline(inputFile, curLine))
+    {
+        str += curLine;
+        str += '\n';
+    }
+
+    return true;
 }

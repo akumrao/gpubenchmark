@@ -19,6 +19,11 @@
 
 #include <android/log.h>
 #include <math.h>
+#ifdef ANDROID
+#include <android/asset_manager.h>
+#else
+#include <dirent.h>
+#endif
 
 #if DYNAMIC_ES3
 #include "gl3stub.h"
@@ -86,6 +91,9 @@ class Renderer {
   void resize(int w, int h);
   void render();
 
+
+  AAssetManager *android_asset_manager;
+
  protected:
   Renderer();
 
@@ -111,7 +119,7 @@ class Renderer {
   float mAngles[MAX_INSTANCES];
 };
 
-extern Renderer* createES2Renderer();
-extern Renderer* createES3Renderer();
+//extern Renderer* createES2Renderer();
+extern Renderer* createES3Renderer(AAssetManager * android_asset_manager);
 
 #endif  // GLES3JNI_H

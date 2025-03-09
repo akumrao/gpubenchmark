@@ -18,9 +18,11 @@ varying vec3 vNormal;
 varying vec2 vUv;
 uniform vec3 ambientLightColor;
 uniform mat4 viewMatrix;
+//uniform float uCurrentTime;
+uniform int Count;
 
 //#define MAX_POINT_LIGHTS 300
-#define MAX_POINT_LIGHTS 1
+#define MAX_POINT_LIGHTS 300
 #define USE_FOG
 #define FOG_EXP2
 

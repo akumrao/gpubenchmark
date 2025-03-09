@@ -1,22 +1,7 @@
-/*#version 300 es
-
+#version 300 es
 precision mediump float;
-
-in vec4 vertexColor;
-
-out vec4 FragColor;
-
+in vec4 vColor;
+out vec4 outColor;
 void main() {
-    vec2 circleCoord = 2.0 * gl_PointCoord - 1.0;
-    if (dot(circleCoord, circleCoord) > 1.0) {
-        discard;
-    }
-
-    FragColor = vertexColor;
-}*/
-
- precision highp float;
- void main()
- {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
- }
+    outColor = vColor;
+}

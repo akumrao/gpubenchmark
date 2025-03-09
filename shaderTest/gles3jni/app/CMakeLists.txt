@@ -16,9 +16,7 @@ else ()
 endif (${ANDROID_PLATFORM_LEVEL} LESS 12)
 
 add_library(gles3jni SHARED
-            src/main/cpp/${GL3STUB_SRC}
-            src/main/cpp/gles3jni.cpp 
-            src/main/cpp/RendererES2.cpp
+            src/main/cpp/gles3jni.cpp
             src/main/cpp/RendererES3.cpp)
 
 # Include libraries needed for gles3jni lib
