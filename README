@@ -36,3 +36,11 @@ The Tech Mahindra team collaborated with Google to benchmark the PowerVR GPU per
 - Benchmarking Tools and Utilities
 
 ---
+
+
+## How to Use
+
+1. Clone the repository.  
+2. Follow installation instructions for the benchmarking tools (to be added).  
+3. Run benchmark scripts/apps to evaluate GPU performance across different GPUs and windowing systems.  
+4. Analyze the collected statistics for optimization insights.
