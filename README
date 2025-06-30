@@ -2,8 +2,8 @@
 
 This project benchmarks the performance of mobile GPUs used in Google Pixel devices, specifically focusing on:
 
-1. **PowerVR** by Imagination Technologies  
-2. **Mali** by Arm
+1. PowerVR by Imagination Technologies  
+2. Mali by Arm
 
 ---
 
@@ -23,6 +23,8 @@ The Tech Mahindra team collaborated with Google to benchmark the PowerVR GPU per
 2. Developing an app to benchmark PDU (Processing Data Unit), TPU (Tensor Processing Unit), and DPU (Data Processing Unit).  
 3. Assessing shader and game load performance using graphical primitives.  
 4. Collecting detailed statistics during tests, including tuning clock frequencies and GPU memory usage for performance optimization.
+5. Comparing Mali GPU performance on Raspberry Pi with various windowing systems: X11, Android SurfaceFlinger, Wayland, and Mesa Gear tools.  
+6. Analysis of PowerVR GPU’s tile-based rendering architecture and mailbox rendering mechanisms.
 
 ---
 
