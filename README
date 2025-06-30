@@ -1,21 +1,36 @@
-# gpu benchmark tools.
+# GPU Benchmark for Google Pixel Mobile GPUs
 
-## APP for benchmark of G ChipSet with OpenGL and Vulcan.
+This project benchmarks the performance of mobile GPUs used in Google Pixel devices, specifically focusing on:
 
-## APP for benchmark of PDU, TPU and DPU. 
+1. **PowerVR** by Imagination Technologies  
+2. **Mali** by Arm
 
-## Shadder and Games Load. 
+---
 
-## You can give run test case per your duration.
+## Background
 
-## Statistics collection of Test with tuning clock frequency and  gpu memory.
+Google is transitioning from Arm's Mali GPUs to PowerVR GPUs from Imagination Technologies in their Tensor G5 system-on-chip (SoC) for the Pixel 10 series. This change marks a significant shift in GPU architecture and capabilities.
 
-## Mailbox between Arm processor and GPU.
+The new PowerVR D-Series DXT-48-1536 GPU is expected to deliver advanced features such as ray tracing and virtualization support, enhancing the graphical performance and efficiency of Pixel devices.
 
+---
 
+## Contribution by Tech Mahindra Team
 
+The Tech Mahindra team collaborated with Google to benchmark the PowerVR GPU performance. The main contributions include:
 
-adb shell settings put global verifier_verify_adb_installs 0
+1. Benchmarking the G ChipSet using OpenGL primitives and evaluating Vulkan 3D scenes and games performance.  
+2. Developing an app to benchmark PDU (Processing Data Unit), TPU (Tensor Processing Unit), and DPU (Data Processing Unit).  
+3. Assessing shader and game load performance using graphical primitives.  
+4. Collecting detailed statistics during tests, including tuning clock frequencies and GPU memory usage for performance optimization.
 
-$ adb install gpuload.apk
+---
 
+## Technologies Used
+
+- OpenGL  
+- Vulkan  
+- PowerVR GPU SDK  
+- Benchmarking Tools and Utilities
+
+---
