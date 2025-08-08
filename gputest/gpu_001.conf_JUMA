@@ -1,0 +1,26 @@
+# ----------------------------------------
+# Configuration File for GPU_001 Test case
+# ----------------------------------------
+
+test_id=GPU_001
+board_name=JUMAPRO
+kernel_version=6.1.68
+build_version=11435464
+
+power=enable
+voltage=enable
+temperature=enable
+frequency=enable
+utilization=enable
+
+log_interval=200
+log_mode=adbshell
+output_directory_path=/storage/emulated/0/Android/data/org.gpu.glload.debug/files/lists/
+
+node_path_for_frequency= /sys/devices/platform/1f000000.mali/cur_freq
+node_path_for_temperature=/sys/class/thermal/thermal_zone3/temp
+node_path_for_power=/sys/bus/iio/devices/iio:device0/energy_value
+gpu_power_rail=S2S_VDD_G3D
+node_path_for_voltage=/sys/kernel/debug/pmic/da9189-pmic/reg_read
+address_for_voltage=0x3400
+node_path_for_utilization=/sys/devices/platform/1f000000.mali/utilization

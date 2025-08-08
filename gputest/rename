@@ -1,0 +1,59 @@
+#!/bin/bash
+
+
+
+
+full_string="app_new-ecd480408a0a11670c59de93cbee010e.h"
+start_char="_new-"
+end_char="."
+
+
+
+
+# Remove everything from the beginning up to and including the start_char   unzip '*.zip'
+temp_string="${full_string#*${start_char}}"
+
+# Remove everything from the end starting from the end_char
+extracted_string="${temp_string%%${end_char}*}"
+
+echo "Extracted: $extracted_string"
+
+new_string=${full_string/_new-$extracted_string/""}
+
+echo $new_string
+
+
+
+
+# Define the target directory. Replace "/path/to/your/directory" with the actual path.
+directory="./"
+
+# Check if the provided path is a valid directory
+if [ ! -d "$directory" ]; then
+  echo "Error: Directory '$directory' not found or is not a directory."
+  exit 1
+fi
+
+echo "Files in '$directory':"
+
+# Loop through each item in the specified directory
+for item in *.*; do
+  # Check if the item is a regular file (not a directory or other special file)
+  if [ -f "$item" ]; then
+
+
+	temp_string="${item#*${start_char}}"
+
+	# Remove everything from the end starting from the end_char
+	extracted_string="${temp_string%%${end_char}*}"
+
+	#echo "Extracted: $extracted_string"
+
+	new_string=${item/_new-$extracted_string/""}
+
+
+
+  	echo $item   $new_string
+    mv $item  $new_string
+  fi
+done
