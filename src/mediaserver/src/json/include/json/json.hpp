@@ -6721,35 +6721,35 @@ class basic_json
                         return;
                     }
 
-                    if (pretty_print)
-                    {
-                        o.write("[\n", 2);
-
-                        // variable to hold indentation for recursive calls
-                        const auto new_indent = current_indent + indent_step;
-                        if (indent_string.size() < new_indent)
-                        {
-                            indent_string.resize(new_indent, ' ');
-                        }
-
-                        // first n-1 elements
-                        for (auto i = val.m_value.array->cbegin(); i != val.m_value.array->cend() - 1; ++i)
-                        {
-                            o.write(indent_string.c_str(), static_cast<std::streamsize>(new_indent));
-                            dump(*i, true, indent_step, new_indent);
-                            o.write(",\n", 2);
-                        }
-
-                        // last element
-                        assert(not val.m_value.array->empty());
-                        o.write(indent_string.c_str(), static_cast<std::streamsize>(new_indent));
-                        dump(val.m_value.array->back(), true, indent_step, new_indent);
-
-                        o.put('\n');
-                        o.write(indent_string.c_str(), static_cast<std::streamsize>(current_indent));
-                        o.put(']');
-                    }
-                    else
+//                    if (pretty_print)
+//                    {
+//                        o.write("[\n", 2);
+//
+//                        // variable to hold indentation for recursive calls
+//                        const auto new_indent = current_indent + indent_step;
+//                        if (indent_string.size() < new_indent)
+//                        {
+//                            indent_string.resize(new_indent, ' ');
+//                        }
+//
+//                        // first n-1 elements
+//                        for (auto i = val.m_value.array->cbegin(); i != val.m_value.array->cend() - 1; ++i)
+//                        {
+//                            o.write(indent_string.c_str(), static_cast<std::streamsize>(new_indent));
+//                            dump(*i, true, indent_step, new_indent);
+//                            o.write(",\n", 2);
+//                        }
+//
+//                        // last element
+//                        assert(not val.m_value.array->empty());
+//                        o.write(indent_string.c_str(), static_cast<std::streamsize>(new_indent));
+//                        dump(val.m_value.array->back(), true, indent_step, new_indent);
+//
+//                        o.put('\n');
+//                        o.write(indent_string.c_str(), static_cast<std::streamsize>(current_indent));
+//                        o.put(']');
+//                    }
+//                    else
                     {
                         o.put('[');
 
@@ -7666,7 +7666,6 @@ class basic_json
     @param[in] j  JSON value to serialize
     @param[in,out] v  byte vector to write the serialization to
 
-    @sa https://github.com/msgpack/msgpack/blob/master/spec.md
     */
     static void to_msgpack_internal(const basic_json& j, std::vector<uint8_t>& v)
     {
@@ -8286,7 +8285,6 @@ class basic_json
     used in the given vector @a v or if the input is not valid MessagePack
     @throw parse_error.113 if a string was expected as map key, but not found
 
-    @sa https://github.com/msgpack/msgpack/blob/master/spec.md
     */
     static basic_json from_msgpack_internal(const std::vector<uint8_t>& v, size_t& idx)
     {

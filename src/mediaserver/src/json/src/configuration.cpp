@@ -38,7 +38,7 @@ void Configuration::loadIt(bool create)
         throw std::runtime_error(
             "Cannot load configuration: File path not set.");
 
-    LDebug("Load: ", _path)
+    //LDebug("Load: ", _path)
             
     if(create)
     {
@@ -51,8 +51,7 @@ void Configuration::loadIt(bool create)
 
         loadFile(_path, root);
     } catch (...) {
-        // The config file may be empty,
-        // but the path is set so we can save.
+        return;
     }
 
     _loaded = true;

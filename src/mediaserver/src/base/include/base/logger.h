@@ -5,7 +5,7 @@
 
 
 #include "base/base.h"
-#include "base/error.h"
+//#include "base/error.h"
 #include "base/singleton.h"
 #include "base/thread.h"
 
@@ -21,7 +21,7 @@
 //#define _REMOTELOG
 #if defined(__ANDROID__)    
 #include <android/log.h>
-#include "net/UdpSocket.h"
+//#include "net/UdpSocket.h"
 #endif
 
 #if defined(_REMOTELOG) 
@@ -126,7 +126,7 @@ public:
     void flush();
 
     /// Writes queued messages asynchronously.
-    void run();
+    void run() override;
 
     /// Clears all queued messages.
     void clear();
@@ -282,7 +282,7 @@ struct LogStream
 
     /// Handle std::endl manipulators.
     /// This method flushes the log message and queues it for write.
-    LogStream& operator<<(std::ostream& (*f)(std::ostream&))
+    LogStream& operator<<(std::ostream& (std::ostream&))
     {
         flush();
         return *this;
@@ -393,7 +393,7 @@ public:
     
     virtual void write(const LogStream& stream) override;
     
-    net::UdpSocket *udpClient;
+    //net::UdpSocket *udpClient;
 };
 
 

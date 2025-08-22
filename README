@@ -1,56 +1,219 @@
-# GPU Benchmark for Google Pixel Mobile GPUs
+# gpu benchmark tools.
 
-This project benchmarks the performance of mobile GPUs used in Google Pixel devices, specifically focusing on:
+## APP for benchmark of G ChipSet with OpenGL .
 
-1. PowerVR by Imagination Technologies  
-2. Mali by Arm
+## Shadder and GL Load. 
 
----
+## You can run test case per your duration.
 
-## Background
-
-Google is transitioning from Arm's Mali GPUs to PowerVR GPUs from Imagination Technologies in their Tensor G5 system-on-chip (SoC) for the Pixel 10 series. This change marks a significant shift in GPU architecture and capabilities.
-
-The new PowerVR D-Series DXT-48-1536 GPU is expected to deliver advanced features such as ray tracing and virtualization support, enhancing the graphical performance and efficiency of Pixel devices.
-
----
-
-## Contribution by Tech Mahindra Team
-
-The Tech Mahindra team collaborated with Google to benchmark the PowerVR GPU performance. The main contributions include:
-
-1. Benchmarking the G ChipSet using OpenGL primitives and evaluating Vulkan 3D scenes and games performance.  
-2. Developing an app to benchmark PDU (Processing Data Unit), TPU (Tensor Processing Unit), and DPU (Data Processing Unit).  
-3. Assessing shader and game load performance using graphical primitives.  
-4. Collecting detailed statistics during tests, including tuning clock frequencies and GPU memory usage for performance optimization.
-5. Comparing Mali GPU performance on Raspberry Pi with various windowing systems: X11, Android SurfaceFlinger, Wayland, and Mesa Gear tools.  
-6. Analysis of PowerVR GPU’s tile-based rendering architecture and mailbox rendering mechanisms.
-
----
-
-## Technologies Used
-
-- OpenGL  
-- Vulkan  
-- PowerVR GPU SDK  
-- Benchmarking Tools and Utilities
-
----
-
-
-## How to Use
-
-1. Clone the repository.  
-2. Follow installation instructions for the benchmarking tools (to be added).  
-3. Run benchmark scripts/apps to evaluate GPU performance across different GPUs and windowing systems.  
-4. Analyze the collected statistics for optimization insights.
+## Statistics collection of Test with tuning clock frequency, FPS, Frame time, latency and gpu memory.
 
 
 
-# For GPU  Android GPU Inspector AGI
+# To install apk
 
-# https://github.com/google/agi
+adb shell settings put global verifier_verify_adb_installs 0
 
-https://g3doc.corp.google.com/vr/gapid/g3doc/index.md?cl=head
+adb install gpuload***.apk
 
-https://gpuinspector.dev
+adb  root
+
+adb shell setenforce 0
+
+
+
+# To copy binary gpucmd to android device
+
+adb push gpucmd  /data/local/tmp/
+
+
+
+# To Test
+
+adb root 
+
+adb shell 
+
+
+cd /data/local/tmp/
+
+
+./gpucmd 0 20  tiles 
+
+./gpucmd 0 20  stress 
+
+./gpucmd 0 20  tiles stress  
+
+
+./gpucmd 0 20  tiles stress  
+
+./gpucmd 0 20 stress throttle tiles shader power
+
+
+# Source Path
+
+https://gchips-internal-review.git.corp.google.com/admin/repos/pdte-slt/test_content
+
+
+
+# Install Android Studio 
+
+check java version 
+
+java --version  openjdk 17.0.xxxxxxx 
+
+open project 
+/usr/local/google/home/aumrao/google/test_content/GPU/gpubenchmark
+ 
+sync it and build it 
+
+
+## Steps to run 
+
+Press Fire button
+
+
+What we have done
+
+1. json for configuration of submodule gpu, cpu etc 
+
+/storage/emulated/0/Android/data/org.gpu.glload.debug/files/config.json
+
+2. Json for statistics of GPU  
+
+/storage/emulated/0/Android/data/org.gpu.glload.debug/files/refract.json
+
+3. Saving Test results of test in file result.txt file,  for all the submodules 
+
+4. Display history of test results 
+
+5. Display of Statistics, it could be enable or disabled from json file   
+
+6. Logging statistic parameters at  at /storage/emulated/0/Android/data/org.gpu.glload.debug/files
+
+7. Streaming statistic to remote udp server
+
+
+# Open Source code we have used
+
+1. glad Vulkan/GL/GLES/EGL/GLX/WGL Loader-Generator
+2. libmatrix  libpng
+3. Most of GPU load are from Net
+4. nlohmann/json
+
+
+# What test cases it covers.
+1. GPU load
+2. Throttling  of GPU
+3. Stress load to GPU 
+4. GPU usage to 100 %, temperature goes to 46 %c,  gpu clock goes to maximum
+5. All the tests passed except one. 
+  
+
+
+
+# Code Structure 
+
+Manifest for APP permission 
+
+Java Activity and list view for GUI and Dialog box
+
+Load are stored in Assets in the format of  Model,  Shaders & Texture. Load becomes part of APK. All the GPU loads are from Net which are freely available in other benchmark tools.  
+
+Java for APP and GUI. Dialog box for load listing, load options and test results  
+
+Java for rendering 
+
+JNI Layer ( communicating with C APIs)
+
+C/C++ Canvas, Scenes & Model, Terrains   
+
+
+ 1. Manifest  App device permission and API ID. Event, Activitfy and Frame ids
+
+ 2. java  
+    Dialog boxes 
+    Main Activity
+    JNI Layer ( communicating with C APIs)
+    
+
+ 3. Cpp 
+    glad
+    gpu
+    canvas 
+    benchmarker test
+    scene*.cpp 
+    libmatrix 
+    mediaserver
+    scene-ideas
+    scene-terrain
+    
+
+4. Android.mk 
+
+
+5. Assets 
+   Model 
+   Shaders
+   Texture 
+
+6. grade scripts
+
+
+
+
+##Tool Chain and Compiler
+
+NDK 25
+
+Compiler clang 17.02
+
+SDK 33
+
+Java and Javac  version 17
+
+MakeFile for C++ Android.mk 
+
+Build script gradle 
+
+
+
+## openGL and Hardware error
+
+OPenGL Computation and OpenGL rendering error.  Mali and Img Tech. specific device drivers errors are not the scope of this document.
+OUT_OF_MEMORY: GPU Memory consumptions are not under control.
+CONTEXT_LOST: Context has been lost and reset by the drive
+INVALID_ENUM: enum argument out of range
+INVALID_VALUE: Numeric argument out of range
+INVALID_OPERATION: Operation illegal in current state 
+INVALID_- FRAMEBUFFER_- OPERATION Framebuffer object is not complete.
+Not enough memory.
+STACK_OVERFLOW:  Stack overflow
+
+
+Readme
+
+GPU hardware errors
+cat /proc/pvr/status 
+
+Device ID: 0:128
+Firmware Status: OK
+Server Errors:   20
+HWR Event Count: 0
+CRR Event Count: 0
+SLR Event Count: 0
+WGP Error Count: 0
+TRP Error Count: 0
+FWF Event Count: 0
+APM Event Count: 5025
+
+
+GPU Utilisation: 6%
+
+DM Utilisation:  VM0  VM1
+          TDM:   0%   0% 
+         GEOM:   1%   0% 
+           3D:   4%   0% 
+          CDM:   0%   0% 
+          RAY:   0%   0% 
+        GEOM2:   0%   0% 

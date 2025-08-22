@@ -98,7 +98,7 @@ print_prefixed_message(std::ostream& stream, const string& color, const string& 
             /* Normal line, emit the prefix. */
             stream << linePrefix << line;
         }
-         STrace << line << std::endl;
+         //STrace << line << std::endl;
 
         /* Only emit a newline if the original message has it. */
         if (!(ss.rdstate() & std::stringstream::eofbit))

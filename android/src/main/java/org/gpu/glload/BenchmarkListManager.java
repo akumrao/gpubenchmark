@@ -1,3 +1,9 @@
+/*
+ * Java class for Benchmark List
+ * Also it stores the test case results path
+ */
+
+
 
 package org.gpu.glload;
 
@@ -18,7 +24,7 @@ class BenchmarkListManager {
         this.activity = activity;
         if (benchmarks == null) {
             this.benchmarks = new ArrayList<String>();
-            this.benchmarks.add("Add benchmark...");
+            this.benchmarks.add("Add Load...");
         }
         else {
             this.benchmarks = benchmarks;
@@ -148,7 +154,7 @@ class BenchmarkListManager {
      * 
      * @return the saved list path
      */
-    private File getSavedListPath(boolean external) {
+     File getSavedListPath(boolean external) {
         File f = null;
 
         if (external) {
@@ -158,7 +164,7 @@ class BenchmarkListManager {
             f = activity.getExternalFilesDir(null);
         }
         else {
-            f = activity.getFilesDir();
+            f = activity.getExternalFilesDir(null);
         }
 
         if (f != null)

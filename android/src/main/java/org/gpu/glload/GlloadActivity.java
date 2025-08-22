@@ -6,30 +6,28 @@ import android.opengl.GLSurfaceView;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Context;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
+
+
+
 
 public class GlloadActivity extends Activity {
     public static final int DIALOG_EGLCONFIG_FAIL_ID = 0;
-    public static final String TAG = "GPULOAD";
-    private WakeLock mWakeLock;
+
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mWakeLock.release();
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
-        mWakeLock.acquire();
+        // co
 
-        mGLView = new GlloadSurfaceView(this);
+         mGLView = new GlloadSurfaceView(this);
         setContentView(mGLView);
     }
 
@@ -53,7 +51,7 @@ public class GlloadActivity extends Activity {
         switch (id) {
             case DIALOG_EGLCONFIG_FAIL_ID:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Glmark2 cannot run because it couldn't find a suitable EGLConfig for GLES2.0. Please check that proper GLES2.0 drivers are installed.");
+                builder.setMessage("gpuload cannot run because it couldn't find a suitable EGLConfig for GLES2.0. Please check that proper GLES2.0 drivers are installed.");
                 builder.setCancelable(false);
                 builder.setPositiveButton("Quit",
                     new DialogInterface.OnClickListener() {
@@ -82,7 +80,7 @@ public class GlloadActivity extends Activity {
     private GLSurfaceView mGLView;
 
     static {
-        System.loadLibrary("glmark2-android");
+        System.loadLibrary("gpuload-android");
     }
 }
 

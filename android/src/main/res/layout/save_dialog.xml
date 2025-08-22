@@ -23,6 +23,13 @@
                   android:layout_below="@id/listName"
                   android:text="@string/externalSaveDialogText"/>
 
+        <Button android:id="@+id/saveload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/external"
+            android:layout_below="@id/external"
+            android:text="save"/>
+
     </RelativeLayout>
 
 </LinearLayout>

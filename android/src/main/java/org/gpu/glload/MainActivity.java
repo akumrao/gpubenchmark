@@ -1,6 +1,19 @@
+/*
+ * Main window for APP. It is first GUI/Window, when we run APP directly by clicking ICON
+ * This window is skipped when we run test from commandline. Directly it render the openGL test
+ * This windows has two buttons Fire and Save
+ * Fire run the openGL test
+ * Save save the setting of test
+ *
+ * We can navigate to new activity from Main Window by opening Dialog box
+ * 1. Dialog box to list benchmark test
+ * 2. Dialog box for test result
+ * 3. Dialog box for test options
+ */
 
 package org.gpu.glload;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import android.os.Bundle;
@@ -118,14 +131,14 @@ public class MainActivity extends Activity {
                 View layout = getLayoutInflater().inflate(R.layout.save_dialog, null);
                 final EditText input = (EditText) layout.findViewById(R.id.listName);
                 final CheckBox checkBox = (CheckBox) layout.findViewById(R.id.external);
+                final Button svButton = (Button) layout.findViewById(R.id.saveload);
 
-                input.setOnEditorActionListener(new OnEditorActionListener() {
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_DONE ||
-                            (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER &&
-                             event.getAction() == KeyEvent.ACTION_UP))
-                        {
-                            String listName = v.getText().toString();
+                    // input.setOnEditorActionListener(new OnEditorActionListener() {
+                    //public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                    svButton.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            String listName = input.getText().toString();
                             try {
                                 benchmarkListManager.saveBenchmarkList(listName,
                                                                        checkBox.isChecked());
@@ -138,8 +151,6 @@ public class MainActivity extends Activity {
                             }
                             dismissDialog(DIALOG_SAVE_LIST_ID);
                         }
-                        return true;
-                    }
                 });
 
                 builder.setTitle("Save list as");
@@ -281,6 +292,29 @@ public class MainActivity extends Activity {
         }
     }
 
+
+    private void runIt(final ArrayList<String> benchmarks)
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        Intent intent = new Intent(MainActivity.this, GlloadActivity.class);
+
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        String args = "";
+        for (int i = 0; i < benchmarks.size() - 1; i++)
+            args += "-b \"" + benchmarks.get(i) + "\" ";
+        if (prefs.getBoolean("run_forever", false))
+            args += "--run-forever ";
+        if (prefs.getBoolean("log_debug", false))
+            args += "--debug ";
+        if (!args.isEmpty())
+            intent.putExtra("args", args);
+
+        if (prefs.getBoolean("show_results", true))
+            startActivityForResult(intent, ACTIVITY_GPULOAD_REQUEST_CODE);
+        else
+            startActivity(intent);
+    }
     /**
      * Initialize the activity.
      *
@@ -292,29 +326,22 @@ public class MainActivity extends Activity {
         benchmarkListManager = new BenchmarkListManager(this, savedBenchmarks);
         final ArrayList<String> benchmarks = benchmarkListManager.getBenchmarkList();
 
+        File listPath = benchmarkListManager.getSavedListPath(true);
+        if (listPath == null)
+          return;
+        listPath.mkdirs();
+
+
         /* Get Scene information */
-        sceneInfoList = GlloadNative.getSceneInfo(getAssets());
+        sceneInfoList = GlloadNative.getSceneInfo(getAssets(),  listPath.getAbsolutePath());
+
+        runIt(benchmarks);
 
         /* Set up the run button */
         Button button = (Button) findViewById(R.id.runButton);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                Intent intent = new Intent(MainActivity.this, GlloadActivity.class);
-                String args = "";
-                for (int i = 0; i < benchmarks.size() - 1; i++)
-                    args += "-b \"" + benchmarks.get(i) + "\" ";
-                if (prefs.getBoolean("run_forever", false))
-                    args += "--run-forever ";
-                if (prefs.getBoolean("log_debug", false))
-                    args += "--debug ";
-                if (!args.isEmpty())
-                    intent.putExtra("args", args);
-                
-                if (prefs.getBoolean("show_results", true))
-                    startActivityForResult(intent, ACTIVITY_GPULOAD_REQUEST_CODE);
-                else
-                    startActivity(intent);
+                runIt(benchmarks);
             }
         });
 
@@ -457,6 +484,6 @@ public class MainActivity extends Activity {
     }
 
     static {
-        System.loadLibrary("glmark2-android");
+        System.loadLibrary("gpuload-android");
     }
 }

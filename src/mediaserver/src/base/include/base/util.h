@@ -3,7 +3,7 @@
 #define base_Util_H
 
 #include "base/base.h"
-#include "base/error.h"
+//#include "base/error.h"
 
 #include <cstdint>
 #include <cstring>

@@ -1,3 +1,7 @@
+/*
+ * Class for Scene Info
+ */
+
 
 package org.gpu.glload;
 

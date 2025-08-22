@@ -1,30 +1,40 @@
-package org.gpu.glload;
+/*
+ * GL Surface View for rendering
+ * It also read the Android Servcies like Power Management
+ */
 
+package org.gpu.glload;
 import java.io.File;
 
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.app.Activity;
+import android.os.PowerManager;
 import android.util.Log;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import android.os.BatteryManager;
+import android.content.Context;
 
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+//import java.time.Duration;
 class GlloadSurfaceView extends GLSurfaceView {
 
-    public static final String LOG_TAG = "glmark2";
+    public static final String LOG_TAG = "gpuload";
 
     public GlloadSurfaceView(Activity activity) {
         super(activity);
         mActivity = activity;
 
-        setEGLContextClientVersion(2);
+        setEGLContextClientVersion(3);
 
         setEGLConfigChooser(getConfigChooser());
 
-        setRenderer(new Glmark2Renderer(this));
+        setRenderer(new gpuloadRenderer(this, activity.getBaseContext()));
     }
 
     private EGLConfigChooser getConfigChooser() {
@@ -73,17 +83,17 @@ class GlloadSurfaceView extends GLSurfaceView {
                 targetConfig.buffer = Integer.parseInt(paramKeyValue[1]);
         }
 
-        return new Glmark2ConfigChooser(targetConfig);
+        return new gpuloadConfigChooser(targetConfig);
     }
 
     /**
      * EGLConfigChooser that quits with an error dialog when a suitable config
      * cannot be found.
      */
-    private class Glmark2ConfigChooser implements EGLConfigChooser {
+    private class gpuloadConfigChooser implements EGLConfigChooser {
         private int[] mAttribList;
 
-        public Glmark2ConfigChooser(GLVisualConfig targetConfig)
+        public gpuloadConfigChooser(GLVisualConfig targetConfig)
         {
             mAttribList = new int[] {
                     EGL10.EGL_RED_SIZE, targetConfig.red,
@@ -194,15 +204,67 @@ class GlloadSurfaceView extends GLSurfaceView {
 
 }
 
-class Glmark2Renderer implements GLSurfaceView.Renderer {
-    public Glmark2Renderer(GlloadSurfaceView view) {
+class gpuloadRenderer implements GLSurfaceView.Renderer {
+
+    public static final String TAG = "GPULOAD";
+    public gpuloadRenderer(GlloadSurfaceView view, Context context) {
         mView = view;
+        this.context = context;
+        ba = (BatteryManager)  context.getSystemService(Context.BATTERY_SERVICE);
+
+
+        pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+
+
+
+        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
+        mWakeLock.acquire();
+
+
+    }
+
+    @Override
+    protected void finalize() {
+
+        mWakeLock.release();
+        int x = 4;
+        x = 5;
     }
 
     public void onDrawFrame(GL10 gl) {
-        if (!GlloadNative.render())
+         getCurrentBatteryPercentage();
+
+
+        if (!GlloadNative.render(battery,isPowSaveMode, isLowPowerStandbyEnabled,isSustainedPerformanceModeSupported  ))
             mView.getActivity().finish();
+
+
     }
+
+    public void getCurrentBatteryPercentage() {
+       //   BatteryManager batteryManager = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
+       //int percentage = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+        if(nCount == 180)
+        {
+            nCount = 1;
+        }
+        else if( nCount++ > 0 )
+        {
+            return;
+        }
+
+
+        isPowSaveMode =  pm.isPowerSaveMode();
+        isLowPowerStandbyEnabled =  pm.isLowPowerStandbyEnabled();
+        isSustainedPerformanceModeSupported =  pm.isSustainedPerformanceModeSupported();
+        //Duration dur = pm.getBatteryDischargePrediction();
+
+
+        battery =  ba.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+    }
+
 
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GlloadNative.resize(width, height);
@@ -210,9 +272,24 @@ class Glmark2Renderer implements GLSurfaceView.Renderer {
 
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         String args = mView.getActivity().getIntent().getStringExtra("args");
-        File f = new File(mView.getActivity().getFilesDir(), "last_run.log");
+        File f = new File(mView.getActivity().getExternalFilesDir(null) + "/lists", "gpu_result.log");
         GlloadNative.init(mView.getActivity().getAssets(), args, f.getAbsolutePath());
     }
 
     private GlloadSurfaceView mView;
+
+    BatteryManager ba;
+    private final Context context;
+    private int nCount= 0;
+
+    private int battery= 0;
+
+    private PowerManager pm;
+
+    private PowerManager.WakeLock mWakeLock;
+
+    private boolean isPowSaveMode;
+    private boolean isLowPowerStandbyEnabled;
+    private boolean isSustainedPerformanceModeSupported ;
+
 }

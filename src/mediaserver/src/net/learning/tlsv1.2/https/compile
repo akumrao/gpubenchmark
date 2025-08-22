@@ -1,2 +1,0 @@
-gcc -g -o server src/server.c -lssl -lcrypto
-

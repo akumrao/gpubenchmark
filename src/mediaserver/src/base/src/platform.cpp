@@ -1,9 +1,9 @@
 
 
 #include "base/platform.h"
-#include "base/error.h"
+//#include "base/error.h"
 
-#include "uv.h"
+//#include "uv.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -22,48 +22,48 @@
 namespace base {
 
 
-std::string getExePath()
-{
-    char buf[PATHMAX];
-    size_t size = PATHMAX;
-    if (uv_exepath(buf, &size) != 0)
-        throw std::runtime_error(
-            "System error: Cannot resolve executable path");
-    return std::string(buf, size);
-}
+//std::string getExePath()
+//{
+//    char buf[PATHMAX];
+//    size_t size = PATHMAX;
+//    if (uv_exepath(buf, &size) != 0)
+//        throw std::runtime_error(
+//            "System error: Cannot resolve executable path");
+//    return std::string(buf, size);
+//}
 
 
-std::string getCwd()
-{
-    char buf[PATHMAX];
-    size_t size = PATHMAX;
-    if (uv_cwd(buf, &size) != 0)
-        throw std::runtime_error(
-            "System error: Cannot resolve working directory");
-    return std::string(buf);
-}
+//std::string getCwd()
+//{
+//    char buf[PATHMAX];
+//    size_t size = PATHMAX;
+//    if (uv_cwd(buf, &size) != 0)
+//        throw std::runtime_error(
+//            "System error: Cannot resolve working directory");
+//    return std::string(buf);
+//}
 
 
-uint64_t getFreeMemory()
-{
-    return uv_get_free_memory();
-}
+//uint64_t getFreeMemory()
+//{
+//    return uv_get_free_memory();
+//}
+//
+//
+//uint64_t getTotalMemory()
+//{
+//    return uv_get_total_memory();
+//}
 
 
-uint64_t getTotalMemory()
-{
-    return uv_get_total_memory();
-}
-
-
-int numCpuCores()
-{
-    uv_cpu_info_t *info;
-    int cpu_count;
-    uv_cpu_info(&info, &cpu_count);
-    uv_free_cpu_info(info, cpu_count);
-    return cpu_count;
-}
+//int numCpuCores()
+//{
+//    uv_cpu_info_t *info;
+//    int cpu_count;
+//    uv_cpu_info(&info, &cpu_count);
+//    uv_free_cpu_info(info, cpu_count);
+//    return cpu_count;
+//}
 
 
 void sleep(int ms)

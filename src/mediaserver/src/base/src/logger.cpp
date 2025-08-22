@@ -286,24 +286,31 @@ namespace base {
 
     void LogChannel::format(const LogStream& stream, std::ostream& ost) {
 #ifdef base_ENABLE_LOGGING
-        if (!_timeFormat.empty()) {
-            ost << time::print(time::toLocal(stream.ts), _timeFormat.c_str());
-            ost << " [" << getStringFromLevel(stream.level) << "] ";
+        //if (!_timeFormat.empty())
+        {
+            char mbstr[100];
+            ost << time::print(time::toLocal(stream.ts), "%b-%d %H:%M:%S");
+            struct timeval tv;
+            gettimeofday(&tv, NULL);
+            int msec = tv.tv_usec / 1000;
+            sprintf(mbstr, ".%03d\t",  msec);
+            ost << mbstr;
+            //ost << " [" << getStringFromLevel(stream.level) << "] ";
 
-            if (!stream.realm.empty()) { // || !stream.address.empty()
-                ost << "[";
-                if (!stream.realm.empty())
-                    ost << stream.realm;
-                if (stream.line > 0)
-                    ost << "(" << stream.line << ")";
-                // if (!stream.address.empty())
-                //     ost << ":" << stream.address;
-                ost << "] ";
-            }
-        } else {
-
-            ost << time::print(time::toLocal(stream.ts), "%Y-%m-%d %H:%M:%S ");
-        }
+//            if (!stream.realm.empty()) { // || !stream.address.empty()
+//                ost << "[";
+//                if (!stream.realm.empty())
+//                    ost << stream.realm;
+//                if (stream.line > 0)
+//                    ost << "(" << stream.line << ")";
+//                // if (!stream.address.empty())
+//                //     ost << ":" << stream.address;
+//                ost << "] ";
+//            }
+//        } else {
+//
+//            ost << time::print(time::toLocal(stream.ts), "%Y-%m-%d %H:%M:%S ");
+      }
         ost << stream.message.str();
         ost.flush();
 #endif
@@ -359,13 +366,13 @@ RemoteChannel::RemoteChannel(std::string name, Level level, std::string ip, int 
             std::string timeFormat)
     : ConsoleChannel(std::move(name), level, std::move(timeFormat)) {
 
-        udpClient = new net::UdpSocket(ip, port);
-        udpClient->connect();
+        //udpClient = new net::UdpSocket(ip, port);
+        //udpClient->connect();
     }
 
     RemoteChannel::~RemoteChannel() {
-        delete udpClient;
-        udpClient = nullptr;
+     //   delete udpClient;
+       // udpClient = nullptr;
     }
 
     void RemoteChannel::write(const LogStream& stream) {
@@ -413,11 +420,11 @@ RemoteChannel::RemoteChannel(std::string name, Level level, std::string ip, int 
 #if defined(__ANDROID__)
 
         // Android log function wrappers
-        static const char* kTAG = "gpuload";
+        static const char* kTAG = "gpustats";
 
-        __android_log_print(ANDROID_LOG_ERROR, kTAG, "%s", ss.str().c_str());
+        __android_log_print(ANDROID_LOG_INFO, kTAG, "%s", ss.str().c_str());
 
-        udpClient->send((char*) ss.str().c_str(), ss.str().length());
+        //udpClient->send((char*) ss.str().c_str(), ss.str().length());
 
 #else
 #if !defined(WIN32) || defined(_REMOTELOG) || defined(_DEBUG)
@@ -543,6 +550,13 @@ RemoteChannel::RemoteChannel(std::string name, Level level, std::string ip, int 
 
         std::ostringstream ss;
         format(stream, ss);
+
+        #if defined(__ANDROID__)
+        static const char* kTAG = "gpustats";
+        __android_log_print(ANDROID_LOG_ERROR, kTAG, "%s", ss.str().c_str());
+        #endif
+
+
         *_fstream << ss.str();
         _fstream->flush();
 

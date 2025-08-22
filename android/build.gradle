@@ -27,10 +27,10 @@ android {
 
     defaultConfig {
         applicationId "org.gpu.glload"
-        minSdkVersion 21
+        minSdkVersion 33
         targetSdkVersion 33
         versionCode 2
-        versionName "2021.12"
+        versionName "2024.02"
         externalNativeBuild {
             ndkBuild {
                 arguments 'APP_STL=c++_static', '-j8'
@@ -67,6 +67,7 @@ android {
             signingConfig signingConfigs.debug
 
             debuggable true
+            minifyEnabled false
             initWith debug
             jniDebuggable true
             renderscriptDebuggable true

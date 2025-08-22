@@ -20,7 +20,7 @@ uniform vec3 ambientLightColor;
 uniform mat4 viewMatrix;
 
 //#define MAX_POINT_LIGHTS 300
-#define MAX_POINT_LIGHTS 1
+#define MAX_POINT_LIGHTS 118
 #define USE_FOG
 #define FOG_EXP2
 

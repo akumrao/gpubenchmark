@@ -1,3 +1,7 @@
+/*
+ * Dialog box to save the option settings
+ */
+
 
 package org.gpu.glload;
 
@@ -134,7 +138,7 @@ public class EditorActivity extends Activity {
             case DIALOG_SCENE_NAME_ID:
                 {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Pick a scene");
+                builder.setTitle("Pick a load");
                 builder.setItems(sceneNames, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         adapter.clear();

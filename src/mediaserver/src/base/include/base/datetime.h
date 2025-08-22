@@ -1655,17 +1655,6 @@ inline std::string DateTimeFormatter::format(const Timestamp& timestamp,
 }
 
 
-inline std::string DateTimeFormatter::format(const DateTime& dateTime,
-                                             const std::string& fmt,
-                                             int timeZoneDifferential)
-{
-    
-    abort();
-    std::string result;
-    result.reserve(64);
-    //append(result, dateTime, fmt, timeZoneDifferential); //arvind
-    return result;
-}
 
 
 inline std::string DateTimeFormatter::format(const LocalDateTime& dateTime,

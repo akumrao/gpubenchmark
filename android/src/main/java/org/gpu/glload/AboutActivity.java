@@ -1,3 +1,7 @@
+/*
+ * About dialog box
+ * Shows Version information
+ */
 
 package org.gpu.glload;
 

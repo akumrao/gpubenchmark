@@ -1,3 +1,7 @@
+/*
+ * Dialog box to show the OPEN GL version, GPU vendor and test results
+ */
+
 
 package org.gpu.glload;
 
@@ -15,7 +19,7 @@ public class ResultsActivity extends Activity {
         setContentView(R.layout.activity_results);
         TextView tv = (TextView) findViewById(R.id.results);
 
-        File f = new File(getFilesDir(), "last_run.log");
+        File f = new File(getExternalFilesDir(null) + "/lists", "gpu_result.log");
 
         try {
             /* Read log from file */

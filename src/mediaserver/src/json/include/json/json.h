@@ -5,7 +5,7 @@
 
 
 #include "base/base.h"
-#include "base/error.h"
+//#include "base/error.h"
 
 #include "json.hpp" // include nlohmann json
 
@@ -36,28 +36,31 @@ namespace cnfg {
 
 
 
-inline void loadFile(const std::string& path, json & root)
+inline bool loadFile(const std::string& path, json & root)
 {
     std::ifstream ifs;
     ifs.open(path.c_str(), std::ifstream::in);
     if (!ifs.is_open())
-        throw std::runtime_error("Cannot open input file: " + path);
+        return false;
 
     root = json::parse(ifs); // thorws std::invalid_argument
+
+    return true;
 }
 
 
-inline void saveFile(const std::string& path, const json& root, int indent = 4)
+inline bool saveFile(const std::string& path, const json& root, int indent = 4)
 {
     std::ofstream ofs(path, std::ios::binary | std::ios::out);
     if (!ofs.is_open())
-        throw std::runtime_error("Cannot open output file: " + path);
+        return false;
 
     if (indent > 0)
         ofs << root.dump(indent);
     else
         ofs << root.dump();
     ofs.close();
+    return true;
 }
 
 
@@ -79,11 +82,11 @@ inline std::string stringify(const json& root, bool pretty = false)
 }
 
 
-inline void assertMember(const json& root, const std::string& name)
-{
-    if (root.find(name) == root.end())
-        throw std::runtime_error("A '" + name + "' member is required.");
-}
+//inline void assertMember(const json& root, const std::string& name)
+//{
+//    if (root.find(name) == root.end())
+//        throw std::runtime_error("A '" + name + "' member is required.");
+//}
 
 
 inline void countNestedKeys(json& root, const std::string& key,
