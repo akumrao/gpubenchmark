@@ -3,6 +3,22 @@ LOCAL_PATH := $(call my-dir)
 
 LOCAL_CPP_EXTENSION := .cc
 
+include $(CLEAR_VARS)
+LOCAL_MODULE := ssl
+LOCAL_SRC_FILES := $(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/lib/libssl.a
+LOCAL_EXPORT_CFLAGS := -I$(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/include
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := crypto
+LOCAL_SRC_FILES := $(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/lib/libcrypto.a
+LOCAL_EXPORT_CFLAGS := -I$(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/include
+include $(PREBUILT_STATIC_LIBRARY)
+
+
+
+include $(CLEAR_VARS)
+
 
 APP_CPPFLAGS += -std=c++20 -fexceptions 
 LOCAL_CPP_FEATURES := rtti exceptions c++17
@@ -18,7 +34,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/src/mediaserver/src/base/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src/ \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix \
-                    $(LOCAL_PATH)/src/mediaserver/src/stun/include
+                    $(LOCAL_PATH)/src/mediaserver/src/stun/include \
+                    /experiment/gpubenchmark/android/src/main/jni/src/mediaserver/src/openssl/build/openssl/arm64-v8a/include#
 
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/base/src/*.cpp)) \
                    $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/net/src/*.cpp))  \
@@ -156,7 +173,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix \
-                    $(LOCAL_PATH)/src/mediaserver/src/stun/include
+                    $(LOCAL_PATH)/src/mediaserver/src/stun/include \
+                    /experiment/gpubenchmark/android/src/main/jni/src/mediaserver/src/openssl/build/openssl/arm64-v8a/include#
 
 LOCAL_SRC_FILES := $(filter-out src/canvas% src/gl-state% src/native-state% src/main.cpp, \
                      $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/*.cpp))) \
