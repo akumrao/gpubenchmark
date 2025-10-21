@@ -1,4 +1,16 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 #include "basetests.h"
+#include "base/uuid.h"
+
 
 using std::cout;
 using std::cerr;
@@ -44,6 +56,26 @@ public:
     }
 };
 
+
+
+template <class T>
+inline mySyncQueue<T>::mySyncQueue(int maxSize )
+    : Queue(maxSize)
+{
+}
+// virtual ~Thread2(void);
+template <class T>
+inline void  mySyncQueue<T>::dispatch(T& item)
+{
+    std::cout << " mySyncQueue pop item " << item <<   std::endl << std::flush;
+    //if (ondispatch)
+      //  ondispatch(item);
+
+}
+
+
+//template MyArray<double, 5>;template MyArray<string, 5>;
+
 int main(int argc, char** argv) {
 
 
@@ -54,6 +86,21 @@ int main(int argc, char** argv) {
 
 
     test::init();
+
+
+     // =========================================================================
+    // Thread
+    //
+    describe("uuid4", []()
+    {
+        
+        for(int i = 0; i < 20 ; ++i )
+        {
+            LDebug( "uuid: ", uuid4::uuid());
+        }
+        
+    });
+
 
     // =========================================================================
     // Thread
@@ -186,6 +233,24 @@ int main(int argc, char** argv) {
                 });
 
 
+    describe("mySyncQueue", []()
+    {
+        
+        mySyncQueue<int> *test = new mySyncQueue<int>();
+        
+        test->start();
+
+        int *y = new int;
+        *y=10;
+        test->push(y);
+        
+        base::sleep(500);
+        
+        test->stop();
+        test->join();
+
+        
+    });
 
     test::runAll();
 

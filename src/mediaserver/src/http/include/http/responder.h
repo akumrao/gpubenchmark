@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 #ifndef HTTPRESPONDER_H
 #define HTTPRESPONDER_H
 
@@ -20,14 +30,14 @@ namespace base {
             virtual void onHeaders(Request& /* request */) {
             }
 
-            virtual void onPayload(const std::string& /* body */) {
+            virtual void onPayload(const std::string& /* body */, Request& ) {
             }
 
             virtual void onRequest(Request& /* request */, Response& /* response */) {
             }
 
             virtual void onClose() {
-            };
+            }
 
             HttpBase* connection() {
                 return _connection;
@@ -68,7 +78,7 @@ namespace base {
             /// Factory method for instantiating the ServerResponder
             /// instance using the given ServerConnection.
 
-            virtual ServerResponder* createResponder(HttpBase* connection) {
+            virtual ServerResponder* createResponder(HttpBase* ) {
                 return nullptr;
             }
         };

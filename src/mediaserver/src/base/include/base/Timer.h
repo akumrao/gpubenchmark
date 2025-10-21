@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 #ifndef TIMER_H
 #define TIMER_H
 #include <uv.h>
@@ -17,7 +27,8 @@ namespace base
             virtual ~Listener() = default;
 
         public:
-            virtual void OnTimer(Timer* timer, int timerID) = 0;
+            //virtual void OnTimer1(Timer* timer, int timerID) = 0;
+            virtual void OnTimer(Timer* timer) = 0;
         };
 
     public:
@@ -28,7 +39,7 @@ namespace base
 
     public:
         void Close();
-        void Start(uint64_t timeout, uint64_t repeat = 0);
+        void Start(uint64_t timeout_ms, uint64_t repeat_ms = 0);
         void Stop();
         void Reset();
         void Restart();

@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 #include "base/application.h"
 //#include "base/memory.h"
 #include "base/logger.h"
@@ -20,6 +30,8 @@ namespace base {
 
     }
 
+    std::map<uv_thread_t, uv_loop_t*> m_mapLoop;
+       
     Application& Application::getDefault() {
         return *internal::singleton.get();
     }
@@ -29,30 +41,68 @@ namespace base {
         //if(Application::loop == uv_default_loop() )
             uvInit();
     }
+    
+   // uv_loop_t* Application::loop ;
+    
 
-    uv_loop_t* Application::loop = uv_default_loop();
-
-    void Application::uvInit() {
-        LDebug("init")
-
-        if(loop ==nullptr || loop == uv_default_loop()  )
+     uv_loop_t* Application::uvGetLoop()
+    {
+        uv_thread_t tid =  uv_thread_self();
+        if( m_mapLoop.find(tid) != m_mapLoop.end())
         {
-            loop = new uv_loop_t;
-            int err = uv_loop_init(loop);
-            if (err != 0)
-                LError("libuv initialization failed");
+            return m_mapLoop[tid];
         }
+        else
+        {
+            SError << "No possible to come here uvGetLoop Tidid "<< tid;
+             throw;
+        }
+    }
+    
+     
+    void Application::uvInit() {
+        
+        uv_thread_t tid =  uv_thread_self();
+        
+        SInfo << " uvInit Tidid " << tid;
+        
+        if( m_mapLoop.find(tid) == m_mapLoop.end())
+        {
+           m_mapLoop[tid]=new uv_loop_t;
+            int err = uv_loop_init(uvGetLoop());
+            if (err != 0)
+               LError("libuv initialization failed");
+        }
+        else
+        {  
+            throw;
+            SError << "No possible to come here";
+        }
+        
 
     }
 
     void Application::uvDestroy() {
 
+        uv_thread_t x =  uv_thread_self();
+        
+        SInfo << " uvDestroy Tidid " << x;
+       
+        std::map<uv_thread_t, uv_loop_t*>::iterator it=m_mapLoop.find (x);
+        
+        if( it != m_mapLoop.end())
+         {
+            uv_loop_close(m_mapLoop[x]);
+            delete m_mapLoop[x];
+            m_mapLoop.erase (x);    //
+         }
+        else
+         {  
+             throw;
+             SError << "No possible to come here";
+         }
         LTrace("uvDestroy")
-        if (loop != nullptr) {
-            int result = uv_loop_close(loop);
-            delete loop;
-            loop =nullptr;
-        }
+   
 
     }
 
@@ -85,11 +135,11 @@ namespace base {
     }
 
     void Application::run() {
-        uv_run(loop, UV_RUN_DEFAULT);
+        uv_run(uvGetLoop(), UV_RUN_DEFAULT);
     }
 
     void Application::stop() {
-        uv_stop(loop);
+        uv_stop(uvGetLoop());
     }
 
 
@@ -101,7 +151,7 @@ namespace base {
 
 #ifdef _DEBUG
                 // Print active handles
-                uv_walk(loop, Application::onPrintHandle, nullptr);
+            //    uv_walk(loop, Application::onPrintHandle, nullptr);
 #endif
 
         // Shutdown the garbage collector to safely free memory before the app exists
@@ -109,7 +159,7 @@ namespace base {
         //uv_unref(handles )
         // Run until handles are closed
         run();
-        assert(loop->active_handles == 0);
+        assert(uvGetLoop()->active_handles == 0);
         //assert(loop->active_reqs == 0);
 
         LDebug("Finalization complete")
@@ -123,7 +173,7 @@ namespace base {
 
         auto sig = new uv_signal_t;
         sig->data = cmd;
-        uv_signal_init(loop, sig);
+        uv_signal_init(uvGetLoop(), sig);
         uv_signal_start(sig, Application::onShutdownSignal, SIGINT);
     }
 

@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 #ifndef TCP_SERVER_H
 #define TCP_SERVER_H
 
@@ -7,18 +17,45 @@
 #include <string>
 #include <unordered_set>
 
+#include <mutex>
+
 namespace base
 {
     namespace net
     {
+        
+        struct child_worker {
+            //uv_process_t req;
+          ////  uv_process_options_t options;
+          
+            uv_connect_t connect_req;
 
-        class TcpServerBase 
+            uv_pipe_t pipe;
+            uv_thread_t thread;
+
+            uv_loop_t *loppworker{nullptr};
+           
+            
+            uv_pipe_t queue;
+            uv_pipe_t channelqueue;
+
+            //uv_os_sock_t fds[2];
+
+            uv_file fds[2];
+            
+            TcpServerBase *obj{nullptr};
+
+            int id;
+
+        } ;//*workers;
+
+        class TcpServerBase : public Listener, public TcpConnectionBase::ListenerClose
         {
         public:
             /**
              * uvHandle must be an already initialized and binded uv_tcp_t pointer.
              */
-            TcpServerBase(uv_tcp_t* uvHandle, int backlog);
+            TcpServerBase(uv_tcp_t* uvHandle, int backlog, bool multiThreaded=false);
             virtual ~TcpServerBase() ;
 
         public:
@@ -29,7 +66,11 @@ namespace base
             const std::string& GetLocalIp() const;
             uint16_t GetLocalPort() const;
             size_t GetNumConnections() const;
-
+	    std::unordered_set<TcpConnectionBase*>& GetConnections();	
+            
+            
+            void setup_workers();
+             
 
             bool setNoDelay(bool enable)
             {
@@ -49,6 +90,7 @@ namespace base
                 #ifdef base_WIN
                     return uv_tcp_simultaneous_accepts(uvHandle, enable ? 1 : 0) == 0;
                 #else
+                    (void) enable;
                     return false;
                 #endif
             }
@@ -57,20 +99,23 @@ namespace base
 
         private:
             bool SetLocalAddress();
+            
+            child_worker *workers{nullptr};
 
             /* Pure virtual methods that must be implemented by the subclass. */
-        protected:
+        public:
             virtual void UserOnTcpConnectionAlloc(TcpConnectionBase** connection) = 0;
             virtual bool UserOnNewTcpConnection(TcpConnectionBase* connection) = 0;
             virtual void UserOnTcpConnectionClosed(TcpConnectionBase* connection) = 0;
 
             /* Callbacks fired by UV events. */
         public:
-            void OnUvConnection(int status);
+            void OnUvConnection(uv_stream_t* uvh, int status);
 
             /* Methods inherited from TcpConnectionBase::Listener. */
         public:
             void OnTcpConnectionClosed(TcpConnectionBase* connection) ;
+            void worker_connection( uv_loop_t *loppworker, uv_stream_t *q);
 
         protected:
                uv_tcp_t* BindTcp(std::string &ip, int port);
@@ -85,12 +130,25 @@ namespace base
             // Others.
             std::unordered_set<TcpConnectionBase*> connections;
             bool closed{ false};
+            
+            bool multithreaded{false};
+            
+            int round_robin_counter{0};
+            int child_worker_count{0};
+            
+            
+            std::mutex con_mutex;
+            
         };
 
         /* Inline methods. */
 
         inline size_t TcpServerBase::GetNumConnections() const {
             return this->connections.size();
+        }
+	
+	inline std::unordered_set<TcpConnectionBase*> & TcpServerBase::GetConnections(){
+            return this->connections;
         }
 
         inline const struct sockaddr* TcpServerBase::GetLocalAddress() const {
@@ -110,13 +168,13 @@ namespace base
         }
 
         /**********************************************************************************************************/
-        class TcpServer : public TcpServerBase, public Listener
+        class TcpServer : public TcpServerBase
         {
         public:
 
      
         public:
-            TcpServer(Listener* listener, std::string ip, int port, bool ssl=false);
+            TcpServer(Listener* listener, std::string ip, int port, bool multiThreaded=false, bool ssl=false );
 
             ~TcpServer() override;
 

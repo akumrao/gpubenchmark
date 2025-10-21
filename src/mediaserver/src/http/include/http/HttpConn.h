@@ -1,8 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
  */
+
 
 /* 
  * File:   HTTPConnection.h
@@ -25,7 +30,7 @@ namespace base {
         class WebSocketConnection;
 
         //template < class T>
-        class HttpConnection : public TcpConnection, public HttpBase {
+        class HttpConnection : public TcpConnectionBase, public HttpBase {
         public:
 
         public:
@@ -33,8 +38,9 @@ namespace base {
             ~HttpConnection() override;
 
         public:
-            void send(const char* data, size_t len);
-            void Close();
+            void send(const char* data, size_t len, bool binary=false) override;
+            void tcpsend(const char* data, size_t len, onSendCallback cb) override;
+            void  Close() override;
 
             /* Pure virtual methods inherited from ::HttpConnection. */
         public:
@@ -49,20 +55,24 @@ namespace base {
            // virtual void onParserEnd();
 
             /// HTTP connection and server interface
-            virtual void onHeaders();
-            virtual void on_payload(const char* data, size_t len);
-            virtual void onComplete();
+            virtual void onHeaders() override;
+            virtual void on_payload(const char* data, size_t len) override;
+            virtual void onComplete() override;
          
 
             /// Send the outdoing HTTP header.
             virtual long sendHeader();
 
-
-            WebSocketConnection *wsAdapter{ nullptr};
+           WebSocketConnection* getWebSocketCon()
+           {
+               return wsAdapter;
+           }
+           
 
         private:
             // Passed by argument.
             Listener* listener{ nullptr};
+            WebSocketConnection *wsAdapter{ nullptr};
 
 
         public:

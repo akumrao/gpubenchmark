@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 #ifndef Client_Connection_H
@@ -55,8 +65,8 @@ namespace base {
             /// for websocket connect
             
 
-            virtual void setReadStream(std::ostream* os) {
-            };
+            virtual void setReadStream(std::ostream* ) {
+            }
             
             virtual std::stringstream* readStream()
             {
@@ -65,21 +75,20 @@ namespace base {
 		// Returns the cast read stream pointer or nullptr.
 	
             
-            virtual void send(const char* data, size_t len){};
-            virtual void send(){};
-            virtual void send(Request& req){};
-            virtual void send(const std::string &str){};
+            virtual void send(const char* , size_t , bool binary=false){}
+            virtual void send(){}
+            virtual void send(Request& ){}
+            virtual void send(const std::string &){}
             
 
-            void Close() {
-            };
+            void Close() {}
 
             virtual void onHeaders() {
-            };
+            }
             virtual void on_payload(const char* data, size_t len);
 
             virtual void onComplete() {
-            };
+            }
     
             
            // ProgressSignal IncomingProgress; ///< Fired on download progress

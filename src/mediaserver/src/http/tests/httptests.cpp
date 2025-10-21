@@ -1,94 +1,149 @@
-//#include "httptests.h"
-#include "http/HttpServer.h"
-#include "base/test.h"
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
+#include "http/HTTPResponder.h"
+//#include "base/test.h"
 #include "base/logger.h"
 #include "base/application.h"
 
 using namespace base;
 using namespace base::net;
-using namespace base::test;
+//using namespace base::test;
 
-class BasicResponder : public net::ServerResponder
-/// Basic server responder (make echo?)
+
+
+class testwebscoket: public net::HttpServer 
 {
 public:
-
-    BasicResponder(net::HttpBase* conn) :
-    ServerResponder(conn) {
-        STrace << "BasicResponder" << std::endl;
-    }
-
-    virtual void onClose() {
-        ;
-        LDebug("On close")
-
-    }
-
-    void onRequest(net::Request& request, net::Response& response) {
-        STrace << "On complete" << std::endl;
-
-        response.setContentLength(14); // headers will be auto flushed
-
-        connection()->send((const char *) "hello universe", 14);
-        connection()->Close();
-    }
-};
-
-class StreamingResponderFactory : public ServerConnectionFactory {
-public:
-
-    ServerResponder* createResponder(HttpBase* conn) {
+    
+     testwebscoket( std::string ip, int port, ServerConnectionFactory *factory = nullptr,  bool multithreaded =false) : net::HttpServer(  ip, port,  factory, multithreaded)
+     {
+         
+     }
+    
+    void on_wsread(Listener* connection, const char* msg, size_t len) {
+      
+        //connection->send("arvind", 6 );
+        SInfo << "msg " << std::string(msg,len);
+        WebSocketConnection *con = (WebSocketConnection*)connection;
         
-         auto& request = conn->_request;
-
-        // Log incoming requests
-        STrace << "Incoming connection from " << ": URI:\n" << request.getURI() << ": Request:\n" << request << std::endl;
-
-        // Handle websocket connections
-        if (request.getURI().find("/upload") == 0 ) {   // || request.has("Sec-WebSocket-Key")) {
-            return new BasicResponder(conn);
-        }
-        else
+        //con->send( msg, len );
+        
+        sendAll( msg, len );
+         
+    }
+    
+    void sendAll(const char* msg, size_t len) {
+      
+        
+        SInfo << "No of Connectons " << this->GetNumConnections();
+        
+        for (auto* connection :  this->GetConnections())
         {
-            return new BasicResponder(conn);
+            
+#if HTTPSSL
+                    
+             WebSocketConnection *con = ((HttpConnection*)connection)->getWebSocketCon();
+#else
+             WebSocketConnection *con = ((HttpConnection*)connection)->getWebSocketCon();
+#endif
+             if(con)
+             con->send(msg ,len );
+//             else
+//             {
+//                WebSocketConnection *con = ((HttpsConnection*)connection)->getWebSocketCon();
+//                if(con)
+//                con->send(msg ,len );
+//             }
         }
-
-        
-        
-        
+         
     }
+    
 };
 
 int main(int argc, char** argv) {
 
-    Logger::instance().add(new ConsoleChannel("debug", Level::Trace));
+   ConsoleChannel *ch =  new ConsoleChannel("debug", Level::Trace);
+            
+   Logger::instance().add(ch);
     //test::init();
   
-        Application app;
-        net::HttpServer socket("0.0.0.0", 8000 );
-        socket.start();
-
-        app.waitForShutdown([&](void*) {
-
-            socket.shutdown();
-
-        });
-
     
-    /*
+   StreamingResponderFactory *stream =   new StreamingResponderFactory();
+            
+   Application app;
+   testwebscoket  *socket = new testwebscoket("0.0.0.0", 8000, stream , false  );
+    //socket.start();
+
+   app.waitForShutdown([&](void*)
+   {
      
+        SInfo << "Main shutdwon1";
+        socket->Close();
+        socket->shutdown();
+        delete socket;
+
+        SInfo << "Main shutdwon";
+
+        delete stream;
+
+        SInfo << "Main shutdwon2";
+
+        app.stop();
+        //app.uvDestroy();
+        delete ch;
+
+    }
+    
+    );
+
+
+/*
+ 
+for numbe of file descriptor  
+lsof -p `pidof runHttp` 
+
+*/ 
+    
+
+/*Leak test  without multithreaded server
+pmap -x 18321
+    Total kB          322044    6112    1084
   
-    /// for websocket we do not need responder
-        Application app;
-        net::HttpServer websocket("0.0.0.0", 8000  );
-        websocket.start();
+    Total kB          322044    6112    1084   RSS /nerver goes above 6112
+ 
+ 
+ 
+ ==19630== LEAK SUMMARY:
+==19630==    definitely lost: 0 bytes in 0 blocks
+==19630==    indirectly lost: 0 bytes in 0 blocks
+==19630==      possibly lost: 1,152 bytes in 4 blocks
+==19630==    still reachable: 5,138 bytes in 31 blocks
+==19630==         suppressed: 0 bytes in 0 blocks
 
-        app.waitForShutdown([&](void*) {
+  
+ */  
+    
+/*
+valgrind --leak-check=full   --show-leak-kinds=all  --track-origins=yes   ./runHttp      
+valgrind --leak-check=full   --show-leak-kinds=all  --track-origins=yes  --verbose 
 
-            websocket.shutdown();
+  total kB          469284    6244    1216
+EAK SUMMARY:
+==25134==    definitely lost: 0 bytes in 0 blocks
+==25134==    indirectly lost: 0 bytes in 0 blocks
+==25134==      possibly lost: 1,728 bytes in 6 blocks
+==25134==    still reachable: 11,326 bytes in 49 blocks
+==25134==         suppressed: 0 bytes in 0 blocks
 
-        });
-     */
+*/
 
 
 

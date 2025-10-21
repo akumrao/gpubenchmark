@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 #ifndef PacketStream_H
 #define PacketStream_H
@@ -17,6 +27,8 @@ namespace base {
         PacketProcessor() {
         }
 
+        virtual ~PacketProcessor(){}
+
         /// This method performs processing on the given
         /// packet and emits the result.
         ///
@@ -24,20 +36,20 @@ namespace base {
         /// the current thread scope) then packet data must be copied.
         /// Copied data can be freed directly aFter the async call to
         /// emit() the outgoing packet.
-        virtual void process(IPacket& packet) {};
+        virtual void process(IPacket& ) {}
 
         /// This method ensures compatibility with the given
         /// packet type. Return false to reject the packet.
 
         virtual bool accepts(IPacket*) {
             return true;
-        };
+        }
 
         virtual void emit(IPacket& packet) {
 
             if (cbProcess)
                 cbProcess(packet);
-        };
+        }
         /// This method ensures compatibility with the given
         /// packet type. Return false to reject the packet.
 
@@ -79,7 +91,7 @@ namespace base {
 
             if (cbProcess)
                 cbProcess(packet);
-        };
+        }
         /// This method ensures compatibility with the given
         /// packet type. Return false to reject the packet.
 

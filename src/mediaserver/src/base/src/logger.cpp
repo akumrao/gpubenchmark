@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 #include "base/logger.h"
 
 
@@ -14,7 +24,7 @@
 #include <iterator>
 
 
-#define base_ENABLE_LOGGING 1
+
 
 using std::endl;
 
@@ -288,6 +298,19 @@ namespace base {
 #ifdef base_ENABLE_LOGGING
         if (!_timeFormat.empty()) {
             ost << time::print(time::toLocal(stream.ts), _timeFormat.c_str());
+            
+            
+            struct timeval mediaTime;
+            memset(&mediaTime, 0, sizeof (mediaTime));
+            gettimeofday(&mediaTime, 0);
+            //time_t mediaTimeMs = (mediaTime.tv_sec)*1000 + (mediaTime.tv_usec) / 1000;
+            int msec = mediaTime.tv_usec / 1000;
+            
+            char strmsec[15];
+            sprintf(strmsec, ".%03d ", msec); 
+            
+            ost << strmsec;
+             
             ost << " [" << getStringFromLevel(stream.level) << "] ";
 
             if (!stream.realm.empty()) { // || !stream.address.empty()
@@ -337,8 +360,16 @@ namespace base {
         //    OutputSDebugtring(temp.c_str());
         //#endif
 
+#if defined(__ANDROID__)
 
-#if !defined(WIN32) || defined(_CONSOLE) || defined(_DEBUG)
+        // Android log function wrappers
+        static const char* kTAG = "jnilog";
+
+        __android_log_print(ANDROID_LOG_ERROR, kTAG, "%s", ss.str().c_str());
+
+        //udpClient->send((char*) ss.str().c_str(), ss.str().length());
+
+#elif !defined(WIN32) || defined(_CONSOLE) || defined(_DEBUG)
         std::cout << ss.str() << std::flush;
 #endif
 
@@ -358,14 +389,13 @@ namespace base {
 RemoteChannel::RemoteChannel(std::string name, Level level, std::string ip, int port,
             std::string timeFormat)
     : ConsoleChannel(std::move(name), level, std::move(timeFormat)) {
-
-        udpClient = new net::UdpSocket(ip, port);
-        udpClient->connect();
+        //udpClient = new net::UdpSocket(ip, port);
+        //udpClient->connect();
     }
 
     RemoteChannel::~RemoteChannel() {
-        delete udpClient;
-        udpClient = nullptr;
+        //delete udpClient;
+        //udpClient = nullptr;
     }
 
     void RemoteChannel::write(const LogStream& stream) {
@@ -413,11 +443,11 @@ RemoteChannel::RemoteChannel(std::string name, Level level, std::string ip, int 
 #if defined(__ANDROID__)
 
         // Android log function wrappers
-        static const char* kTAG = "gpuload";
+        static const char* kTAG = "jnilog";
 
         __android_log_print(ANDROID_LOG_ERROR, kTAG, "%s", ss.str().c_str());
 
-        udpClient->send((char*) ss.str().c_str(), ss.str().length());
+       //udpClient->send((char*) ss.str().c_str(), ss.str().length());
 
 #else
 #if !defined(WIN32) || defined(_REMOTELOG) || defined(_DEBUG)
@@ -426,7 +456,7 @@ RemoteChannel::RemoteChannel(std::string name, Level level, std::string ip, int 
         // static std::string str = str + ss.str();
         // if(str.length() > 1024)
         {
-            udpClient->send((char*) ss.str().c_str(), ss.str().length());
+            //udpClient->send((char*) ss.str().c_str(), ss.str().length());
             //str.erase();
         }
 #endif

@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 
@@ -5,7 +15,7 @@
 #include "http/response.h"
 #include <http_parser.h>
 #include <functional> 
-
+#include "net/TcpConnection.h"
 #ifndef HTTP_Parser_H
 #define HTTP_Parser_H
 
@@ -104,8 +114,8 @@ namespace base {
             virtual ~HttpBase();
 
         public:
-            virtual void tcpsend(const char* data, size_t len) {};
-            virtual void send(const char* data, size_t len) = 0;
+            virtual void tcpsend(const char* data, size_t len, onSendCallback cb) =0;
+            virtual void send(const char* data, size_t len, bool binary=false) = 0;
             virtual void Close() = 0;
 
 

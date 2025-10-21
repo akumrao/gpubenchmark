@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 #ifndef base_Application_H
 #define base_Application_H
@@ -11,6 +21,9 @@
 #include <functional>
 #include <map>
 #include <vector>
+
+
+
 
 
 namespace base {
@@ -41,24 +54,40 @@ public:
     ///
     /// The event loop may be assigned on construction, otherwise the default
     /// event loop will be used.
-    static uv_loop_t* loop;
+ 
     
     void  uvInit();
     void  uvDestroy();
     
-    static uv_loop_t* uvGetLoop(    )
-    {
-        return loop;
-    }
-    
+    static uv_loop_t* uvGetLoop();
+   
     static int64_t GetTime()
     {
-         uv_update_time(loop);
-         return uv_now(loop);
+         uv_update_time(uvGetLoop());
+         return uv_now(uvGetLoop());
     }
     //
     // Event Loop
     //
+
+    static uint64_t GetTimeMs()
+    {
+        return static_cast<uint64_t>(uv_hrtime() / 1000000u);
+    }
+
+    static uint64_t GetTimeUs()
+    {
+        return static_cast<uint64_t>(uv_hrtime() / 1000u);
+    }
+
+    static uint64_t GetTimeNs()
+    {
+        return uv_hrtime();
+    }
+
+
+
+
     
      /// When Run the application event loop in a thread. Call stopAsync to stop
     //void runAsync();
@@ -144,7 +173,7 @@ struct ShutdownCmd
 
 
 inline void onShutdownSignal(std::function<void(void*)> callback = nullptr,
-                             void* opaque = nullptr, uv_loop_t* loop = uv_default_loop())
+                             void* opaque = nullptr, uv_loop_t* loop = Application::uvGetLoop())
 {
     auto cmd = new ShutdownCmd;
     cmd->opaque = opaque;
@@ -164,7 +193,7 @@ inline void onShutdownSignal(std::function<void(void*)> callback = nullptr,
 
 
 inline void waitForShutdown(std::function<void(void*)> callback = nullptr,
-                            void* opaque = nullptr, uv_loop_t* loop = uv_default_loop())
+                            void* opaque = nullptr, uv_loop_t* loop = Application::uvGetLoop())
 {
     onShutdownSignal(callback, opaque, loop);
     uv_run(loop, UV_RUN_DEFAULT);

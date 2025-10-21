@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 #ifndef Buffer_H
@@ -41,15 +51,15 @@ public:
 
     void getU64(uint64_t& val);
 
-    const char peek();
-    const uint8_t peekU8();
-    const uint16_t peekU16();
-    const uint32_t peekU24();
-    const uint32_t peekU32();
+     char peek();
+     uint8_t peekU8();
+     uint16_t peekU16();
+     uint32_t peekU24();
+     uint32_t peekU32();
 
     /// Peeks data from the BitReader.
     /// -1 is returned if reading past boundary.
-    const uint64_t peekU64();
+     uint64_t peekU64();
 
     //
     // String parsing methods.

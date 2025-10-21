@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 
@@ -75,7 +85,7 @@ std::string extname(const std::string& path, bool includeDot)
     if (dirp != std::string::npos && dotp < dirp)
         return "";
 
-    return path.substr((dotp + includeDot) ? 0 : 1);
+    return path.substr(dotp + (includeDot ? 0 : 1));
 }
 
 
@@ -84,48 +94,61 @@ bool exists(const std::string& path)
 // Normalize is needed to ensure no
 // trailing slash for directories or
 // stat fails to recognize validity.
-// TODO: Do we need transcode here?
-#ifdef base_WIN
-    struct _stat s;
-    return _stat(fs::normalize(path).c_str(), &s) != -1;
-#else
-    struct stat s;
-    return stat(fs::normalize(path).c_str(), &s) != -1;
-#endif
+// // TODO: Do we need transcode here?
+//  #ifdef base_WIN
+//      struct _stat s;
+//      return _stat(fs::normalize(path).c_str(), &s) != -1;
+//  #else
+//      struct stat s;
+//      return stat(fs::normalize(path).c_str(), &s) != -1;
+//  #endif
+
+
+    if(!access(path.c_str(), F_OK )){
+          return true;
+    }
+
+
+    return false;
 }
 
 
 bool isdir(const std::string& path)
 {
+
+    exit(0);
+
 // TODO: Do we need transcode here?
-#ifdef base_WIN
-    struct _stat s;
-    _stat(fs::normalize(path).c_str(), &s);
-#else
-    struct stat s;
-    stat(fs::normalize(path).c_str(), &s);
-#endif
-    // S_IFDIR: directory file.
-    // S_IFCHR: character-oriented device file
-    // S_IFBLK: block-oriented device file
-    // S_IFREG: regular file
-    // S_IFLNK: symbolic link
-    // S_IFSOCK: socket
-    // S_IFIFO: FIFO or pipe
-    return (s.st_mode & S_IFDIR) != 0;
+// #ifdef base_WIN
+//     struct _stat s;
+//     _stat(fs::normalize(path).c_str(), &s);
+// #else
+//     struct stat s;
+//     stat(fs::normalize(path).c_str(), &s);
+// #endif
+//     // S_IFDIR: directory file.
+//     // S_IFCHR: character-oriented device file
+//     // S_IFBLK: block-oriented device file
+//     // S_IFREG: regular file
+//     // S_IFLNK: symbolic link
+//     // S_IFSOCK: socket
+//     // S_IFIFO: FIFO or pipe
+//     return (s.st_mode & S_IFDIR) != 0;
+
+    return false;
 }
 
 
 std::int64_t filesize(const std::string& path)
 {
-#ifdef base_WIN
-    struct _stat s;
-    if (_stat(path.c_str(), &s) == 0)
-#else
-    struct stat s;
-    if (stat(path.c_str(), &s) == 0)
-#endif
-        return s.st_size;
+// #ifdef base_WIN
+//     struct _stat s;
+//     if (_stat(path.c_str(), &s) == 0)
+// #else
+//     struct stat s;
+//     if (stat(path.c_str(), &s) == 0)
+// #endif
+//         return s.st_size;
     return -1;
 }
 
@@ -161,6 +184,18 @@ void readdir(const std::string& path, std::vector<std::string>& res)
         res.push_back(dent.name);
     }
 }
+
+void readdir_filter(const std::string& path, std::vector<std::string>& res, const std::string& filter)
+{
+    internal::FSapi(scandir, path.c_str(), 0)
+
+    uv_dirent_t dent;
+    while (UV_EOF != uv_fs_scandir_next(&wrap.req, &dent)) {
+        if(extname(dent.name)   ==  filter )
+        res.push_back(dent.name);
+    }
+}
+
 
 
 void mkdir(const std::string& path, int mode)
@@ -241,30 +276,30 @@ std::string normalize(const std::string& path)
     return s;
 }
 
-
-std::string transcode(const std::string& path)
-{
-#if defined(_MSC_VER) && defined(base_UNICODE)
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>
-        convert; // conversion between UTF-16 and UTF-8
-    std::wstring uniPath = convert.from_bytes(
-        path); // convert UTF-8 std::string to UTF-16 std::wstring
-    DWORD len = WideCharToMultiByte(
-        CP_ACP, WC_NO_BEST_FIT_CHARS, uniPath.c_str(),
-        static_cast<int>(uniPath.length()), nullptr, 0, nullptr, nullptr);
-    if (len > 0) {
-        std::unique_ptr<char[]> buffer(new char[len]);
-        DWORD rc = WideCharToMultiByte(
-            CP_ACP, WC_NO_BEST_FIT_CHARS, uniPath.c_str(),
-            static_cast<int>(uniPath.length()), buffer.get(),
-            static_cast<int>(len), nullptr, nullptr);
-        if (rc) {
-            return std::string(buffer.get(), len);
-        }
-    }
-#endif
-    return path;
-}
+//
+//std::string transcode(const std::string& path)
+//{
+//#if defined(_MSC_VER) && defined(base_UNICODE)
+//    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>
+//        convert; // conversion between UTF-16 and UTF-8
+//    std::wstring uniPath = convert.from_bytes(
+//        path); // convert UTF-8 std::string to UTF-16 std::wstring
+//    DWORD len = WideCharToMultiByte(
+//        CP_ACP, WC_NO_BEST_FIT_CHARS, uniPath.c_str(),
+//        static_cast<int>(uniPath.length()), nullptr, 0, nullptr, nullptr);
+//    if (len > 0) {
+//        std::unique_ptr<char[]> buffer(new char[len]);
+//        DWORD rc = WideCharToMultiByte(
+//            CP_ACP, WC_NO_BEST_FIT_CHARS, uniPath.c_str(),
+//            static_cast<int>(uniPath.length()), buffer.get(),
+//            static_cast<int>(len), nullptr, nullptr);
+//        if (rc) {
+//            return std::string(buffer.get(), len);
+//        }
+//    }
+//#endif
+//    return path;
+//}
 
 
 void addsep(std::string& path)

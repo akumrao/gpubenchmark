@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 #ifndef base_Queue_H
 #define base_Queue_H
@@ -9,10 +19,12 @@
 #include "base/platform.h"
 //#include "base/synchronizer.h"
 #include "base/thread.h"
-#include "uv.h"
+#include "base/logger.h"
+//#include "uv.h"
 #include <queue>
 #include <algorithm>
-
+#include <mutex>
+#include <condition_variable>
 namespace base {
 
 
@@ -238,7 +250,71 @@ protected:
 //
 // Synchronization Queue
 //
+template <class T>
+class SyncQueue : public RunnableQueue<T>
+{
+public:
+    typedef RunnableQueue<T> Queue;
 
+    
+    
+    SyncQueue(int limit = 2048, int timeout = 0)
+        : Queue(limit, timeout)
+    {
+    }
+
+
+    virtual void run()
+    {
+       
+        while (!Queue::stopped()) {
+           
+            std::unique_lock<std::mutex> lck(_mutex);
+            //cv.wait(lck, !Queue::empty());
+            //cv.wait(lck);
+            if(Queue::empty())
+            cv.wait(lck );
+            else
+            {
+                lck.unlock();
+                Queue::dispatchNext();
+            }
+           // base::sleep(1);
+            // base::sleep(dispatchNext() ? 1 : 50);
+        }
+    }
+
+    /// Pushes an item onto the queue.
+    /// Item pointers are now managed by the SyncQueue.
+    virtual void push(T* item)
+    {
+        Queue::push(item);
+        cv.notify_one();
+    }
+
+    virtual void stop(bool flag = true) 
+    {
+       
+        Queue::clear();
+        Queue::stop(true);
+        cv.notify_one();
+         
+    }
+
+        /// Destruction is deferred to allow enough
+    /// time for all callbacks to return.
+    virtual ~SyncQueue()
+    {
+       Queue::clear();
+      // Queue::join();
+    }
+   
+
+protected:
+    std::condition_variable cv;
+    mutable std::mutex _mutex;
+
+};
 
 /// SyncQueue extends Synchronizer to implement a synchronized FIFO
 /// queue which receives T objects from any thread and synchronizes

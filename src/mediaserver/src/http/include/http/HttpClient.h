@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 #ifndef HTTP_Client_H
@@ -13,7 +23,7 @@ namespace base {
     namespace net {
         
 
-        class HttpClient : public TcpConnection, public GetAddrInfoReq, public ClientConnecton {
+        class HttpClient : public TcpConnectionBase, public GetAddrInfoReq, public ClientConnecton {
         public:
 
             HttpClient(const std::string& protocol, const std::string &ip, int port, const std::string& query);
@@ -27,22 +37,22 @@ namespace base {
             void connect();
 
         public:
-            void tcpsend(const char* data, size_t len);
-            void send(const char* data, size_t len);
-            void send();
-            void send(Request& req);
-            void send(const std::string &str);
-            void Close();
+            void tcpsend(const char* data, size_t len,onSendCallback cb) override;
+            void send(const char* data, size_t len, bool binary=false) override;
+            void send() override;
+            void send(Request& req) override;
+            void send(const std::string &str) override;
+            void Close() override;
             
 
-            void on_connect();
-            void on_close();
+            void on_connect() override;
+            void on_close() override;
 
-            virtual void cbDnsResolve(addrinfo* res, std::string ip);
+            virtual void cbDnsResolve(addrinfo* res, void* ptr) override;
 
             /* Pure virtual methods inherited from ::TcpHTTPConnection. */
         public:
-            void on_read(const char* data, size_t len);
+            void on_read(const char* data, size_t len) override;
 
             /*  /// HTTP Parser interface
               virtual void onParserHeader(const std::string& name, const std::string& value);
@@ -52,9 +62,9 @@ namespace base {
               virtual void onParserEnd();
              */
             /// HTTP connection and server interface
-            virtual void onHeaders();
-            void on_payload(const char* data, size_t len);
-            virtual void onComplete();
+            virtual void onHeaders() override;
+            void on_payload(const char* data, size_t len) override;
+            virtual void onComplete() override;
   
 
             //   Message* incomingHeader();
@@ -69,7 +79,7 @@ namespace base {
             /// Set true to prevent auto-sending HTTP headers.
             void shouldSendHeader(bool flag);
 
-            void setReadStream(std::ostream* os);
+            void setReadStream(std::ostream* os) override;
 
         private:
             // Passed by argument.
@@ -81,8 +91,8 @@ namespace base {
             // Response _response;
             //Parser _parser;
 
-            Message* incomingHeader();
-            Message* outgoingHeader();
+            Message* incomingHeader() override;
+            Message* outgoingHeader() override;
 
 
             URL _url;
@@ -92,9 +102,9 @@ namespace base {
             std::vector<std::string> _outgoingBuffer;
             std::unique_ptr<std::ostream> _readStream;
             
-           std::stringstream* readStream()
+           std::stringstream* readStream() override
            {
-		return dynamic_cast<std::stringstream*>(_readStream.get());
+		      return (std::stringstream*)_readStream.get();
            }
 
 
@@ -120,7 +130,7 @@ namespace base {
                    void on_connect();
                    void on_close();
 
-                   virtual void cbDnsResolve(addrinfo* res, std::string ip);
+                   virtual void cbDnsResolve(addrinfo* res);
 
 
         public:

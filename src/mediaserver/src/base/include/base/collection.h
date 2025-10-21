@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 #ifndef Containers_H
@@ -25,7 +35,7 @@ namespace base {
 template <class TKey, class TValue> class AbstractCollection
 {
 public:
-    AbstractCollection(){};
+    AbstractCollection(){}
     virtual ~AbstractCollection() {}
 
     virtual bool add(const TKey& key, TValue* item, bool whiny = true) = 0;
@@ -37,6 +47,9 @@ public:
     virtual bool empty() const = 0;
     virtual size_t size() const = 0;
     virtual TValue* get(const TKey& key, bool whiny = true) const = 0;
+    
+    virtual void getAll(std::vector<TKey> &vt ) = 0;
+    
     virtual void clear() = 0;
 };
 
@@ -105,6 +118,18 @@ public:
         }
 
         return nullptr;
+    }
+    
+    
+    virtual void getAll(std::vector<TKey> &vt )  override
+    {
+        std::lock_guard<std::mutex> guard(_mutex);
+        for (typename Map::iterator it = _map.begin(); it != _map.end(); ++it) 
+        {
+          vt.push_back(it->first);
+        } 
+    
+        return ;
     }
 
     virtual bool free(const TKey& key) override
@@ -190,7 +215,7 @@ public:
         std::lock_guard<std::mutex> guard(_mutex);
       //  util::clearMap<TDeleter>(_map);
         
-     typename    Map::iterator it = _map.begin();
+    typename    Map::iterator it = _map.begin();
     typename Map::iterator it2;
     while (it != _map.end()) {
         it2 = it++;

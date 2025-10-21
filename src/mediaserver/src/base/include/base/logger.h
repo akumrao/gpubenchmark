@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 #ifndef base_Logger_H
@@ -21,7 +31,7 @@
 //#define _REMOTELOG
 #if defined(__ANDROID__)    
 #include <android/log.h>
-#include "net/UdpSocket.h"
+//#include "net/UdpSocket.h"
 #endif
 
 #if defined(_REMOTELOG) 
@@ -126,7 +136,7 @@ public:
     void flush();
 
     /// Writes queued messages asynchronously.
-    void run();
+    void run() override;
 
     /// Clears all queued messages.
     void clear();
@@ -284,6 +294,7 @@ struct LogStream
     /// This method flushes the log message and queues it for write.
     LogStream& operator<<(std::ostream& (*f)(std::ostream&))
     {
+        (void) *f;
         flush();
         return *this;
     }
@@ -303,7 +314,7 @@ struct LogStream
 struct LogStream
 {
     LogStream(Level level, std::string realm, int line, const char* channel = nullptr) {};
-    LogStream(const LogStream& that) {};
+    LogStream(const LogStream& that) {}
 
     template<typename... Args>
     void write(Args... args)
@@ -341,12 +352,12 @@ public:
                        std::string realm = "");
     virtual void format(const LogStream& stream, std::ostream& ost);
 
-    std::string name() const { return _name; };
-    Level level() const { return _level; };
-    std::string timeFormat() const { return _timeFormat; };
+    std::string name() const { return _name; }
+    Level level() const { return _level; }
+    std::string timeFormat() const { return _timeFormat; }
 
-    void setLevel(Level level) { _level = level; };
-    void setTimeFormat(std::string format) { _timeFormat = std::move(format); };
+    void setLevel(Level level) { _level = level; }
+    void setTimeFormat(std::string format) { _timeFormat = std::move(format); }
     void setFilter(std::string filter) { _filter = std::move(filter); }
 
 protected:
@@ -393,7 +404,7 @@ public:
     
     virtual void write(const LogStream& stream) override;
     
-    net::UdpSocket *udpClient;
+   // net::UdpSocket *udpClient;
 };
 
 
@@ -445,13 +456,13 @@ public:
     virtual void write(const LogStream& stream) override;
     virtual void rotate();
 
-    std::string dir() const { return _dir; };
-    std::string filename() const { return _filename; };
-    int rotationInterval() const { return _rotationInterval; };
+    std::string dir() const { return _dir; }
+    std::string filename() const { return _filename; }
+    int rotationInterval() const { return _rotationInterval; }
 
-    void setDir(std::string dir) { _dir = std::move(dir); };
-    void setExtension(std::string ext) { _extension = std::move(ext); };
-    void setRotationInterval(int interval) { _rotationInterval = interval; };
+    void setDir(std::string dir) { _dir = std::move(dir); }
+    void setExtension(std::string ext) { _extension = std::move(ext); }
+    void setRotationInterval(int interval) { _rotationInterval = interval; }
 
 protected:
     std::ofstream* _fstream;

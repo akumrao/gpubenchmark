@@ -1,10 +1,22 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 #ifndef HttpServer_H
 #define HttpServer_H
 #include "net/netInterface.h"
 #include "http/HttpServer.h"
 #include "http/HttpConn.h"
+#if HTTPSSL
 #include "http/HttpsConn.h"
+#endif
 #include "net/TcpServer.h"
 #include "http/parser.h"
 #include "http/responder.h"
@@ -20,11 +32,11 @@ namespace base {
         /*******************************************************************************************************************************************************/
 
 
-        class HttpServerBase : public TcpServerBase, public Listener  {
+        class HttpServerBase : public TcpServerBase  {
         public:
 
         public:
-            HttpServerBase(Listener *listener, std::string ip, int port , bool ssl=false );
+            HttpServerBase(Listener *listener, std::string ip, int port , bool multithreaded =false, bool ssl=false );
 
             ~HttpServerBase() override;
 
@@ -44,7 +56,7 @@ namespace base {
         protected:
             
             bool ssl;
-
+ 
         };
 
         /**********************************************************************************************************************/
@@ -55,7 +67,7 @@ namespace base {
         class HttpServer : public HttpServerBase {
         public:
 
-            HttpServer( std::string ip, int port, ServerConnectionFactory *factory = nullptr);
+            HttpServer( std::string ip, int port, ServerConnectionFactory *factory = nullptr, bool multithreaded =false);
 
             ServerResponder* createResponder(HttpBase* conn);
 
@@ -89,7 +101,7 @@ namespace base {
         class HttpsServer : public HttpServerBase {
         public:
 
-            HttpsServer( std::string ip, int port, ServerConnectionFactory *factory = nullptr);
+            HttpsServer( std::string ip, int port, ServerConnectionFactory *factory = nullptr, bool multithreaded =false);
 
             ServerResponder* createResponder(HttpBase* conn);
 

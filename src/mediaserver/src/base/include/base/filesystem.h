@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 #ifndef base_FileSystem_H
@@ -45,6 +55,7 @@ Base_API std::int64_t filesize(const std::string& path);
 
 /// Returns a list of all files and folders in the directory.
 Base_API void readdir(const std::string& path, std::vector<std::string>& res);
+Base_API void readdir_filter(const std::string& path, std::vector<std::string>& res, const std::string& filter);
 
 /// Creates a directory.
 Base_API void mkdir(const std::string& path, int mode = 0755);
@@ -54,6 +65,9 @@ Base_API void mkdirr(const std::string& path, int mode = 0755);
 
 /// Creates a directory.
 Base_API void rmdir(const std::string& path);
+
+// Creates a directory.
+Base_API void rmdirr(const std::string& path);  //removed recursively
 
 /// Deletes a file.
 Base_API void unlink(const std::string& path);

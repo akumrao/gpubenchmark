@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 #ifndef BASE_Packet_H
 #define BASE_Packet_H
@@ -18,17 +28,17 @@ struct Bitwise
     {
     }
 
-    virtual void reset() { data = 0; };
+    virtual void reset() { data = 0; }
     virtual void set(unsigned flag)
     {
         if (!has(flag))
             data |= flag;
     }
 
-    virtual void add(unsigned flag) { data |= flag; };
-    virtual void remove(unsigned flag) { data &= ~flag; };
-    virtual void toggle(unsigned flag) { data ^= flag; };
-    virtual bool has(unsigned flag) const { return (data & flag) == flag; };
+    virtual void add(unsigned flag) { data |= flag; }
+    virtual void remove(unsigned flag) { data &= ~flag; }
+    virtual void toggle(unsigned flag) { data ^= flag; }
+    virtual bool has(unsigned flag) const { return (data & flag) == flag; }
 };
     
     
@@ -56,7 +66,7 @@ struct IPacket{
     }
     
     
-     virtual size_t size() const { return 0; };
+     virtual size_t size() const { return 0; }
 
     /// The packet data pointer for buffered packets.
     virtual char* data() const { return nullptr; }

@@ -1,8 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
  */
+
 
 /* 
  * File:   HTTPConnection.cpp
@@ -22,7 +27,7 @@ namespace base {
     namespace net {
 
         HttpsConnection::HttpsConnection(Listener* listener, http_parser_type type)
-        : SslConnection(listener),
+        : SslConnection(true),
            listener(listener),HttpBase(type),wsAdapter(nullptr){
 
 
@@ -35,14 +40,22 @@ namespace base {
         }
 
         HttpsConnection::~HttpsConnection() {
-            LTrace("~HttpsConnection()")
+            if(wsAdapter)
+            {    
+                 SInfo <<  "wsAdapter delete connection " << wsAdapter; 
+                delete wsAdapter;
+                wsAdapter = nullptr;
+                 
+            }
+            
+            SInfo << "~HttpsConnection()";
         }
 
         void HttpsConnection::on_read(const char* data, size_t len) {
 
-            LTrace("on_read()" )
+          // LTrace("on_read()" )
                     
-             LTrace( data )
+          //  LTrace( data )
                     
             if(wsAdapter)
             {
@@ -58,10 +71,11 @@ namespace base {
         
           void HttpsConnection::on_close() {
 
-            LTrace("on_close()")
+            SInfo << "HttpsConnection::on_close()";
                     
             if (_responder) {
                 _responder->onClose();
+                delete _responder;
             }
              
             this->listener->on_close(this);
@@ -92,10 +106,16 @@ namespace base {
         
         void HttpsConnection::Close()
         {
-            TcpConnection::Close();
+            TcpConnectionBase::Close();
         }
         
-        void HttpsConnection::send(const char* data, size_t len) {
+        
+        void  HttpsConnection::tcpsend(const char* data, size_t len, onSendCallback cb)
+        {
+               SslConnection::tcpsend(data, len, cb); // arvind
+        }
+        
+        void HttpsConnection::send(const char* data, size_t len, bool binary) {
 
              LTrace("HttpsConnection::send()")
             
@@ -137,7 +157,12 @@ namespace base {
                         // scope we just swap the SocketAdapter instance pointers and do
                         // a deferred delete on the old adapter. No more callbacks will be
                         // received from the old adapter after replaceAdapter is called.
+                           
+                        if(wsAdapter)
+                               delete wsAdapter;
                           wsAdapter = new WebSocketConnection( listener, this, ServerSide);
+                          SInfo <<  "wsAdapter new connection " << wsAdapter;  
+
                         //   replaceAdapter(wsAdapter);
 
                            // Send the handshake request to the WS adapter for handling.
@@ -156,12 +181,15 @@ namespace base {
 
                            wsAdapter->onSocketRecv( buffer);
             }
+            else
+            {
 
             // Notify the server the connection is ready for data flow
             //   _server.onConnectionReady(*this);
 
             // Instantiate the responder now that request headers have been parsed
-            this->listener->on_header(this);
+                this->listener->on_header(this);
+            }
 
             // Upgraded connections don't receive the onHeaders callback
             if (_responder && !_upgrade)
@@ -170,6 +198,9 @@ namespace base {
 
 
         void HttpsConnection::on_payload(const char* data, size_t len){
+            
+            if (_responder)
+                _responder->onPayload( std::string( data,len ), _request);
 
         }
 

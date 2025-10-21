@@ -3,22 +3,29 @@ LOCAL_PATH := $(call my-dir)
 
 LOCAL_CPP_EXTENSION := .cc
 
-APP_CPPFLAGS += -fexceptions
+
+APP_CPPFLAGS += -std=c++20 -fexceptions 
+LOCAL_CPP_FEATURES := rtti exceptions c++17
 
 include $(CLEAR_VARS)
 
+LOCAL_CPP_FEATURES := rtti exceptions c++17
+LOCAL_CPPFLAGS += -std=c++17
 LOCAL_MODULE := libMedia
-LOCAL_CFLAGS :=   -Wall -Wextra -fexceptions -g -DDEBUG=1
+LOCAL_CFLAGS :=   -Wall -Wextra -std=c++17 -fexceptions -g -DDEBUG=1
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/src/mediaserver/src/base/include \
                     $(LOCAL_PATH)/src/mediaserver/src/net/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src/ \
-                    $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix
+                    $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix \
+                    $(LOCAL_PATH)/src/mediaserver/src/stun/include
 
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/base/src/*.cpp)) \
                    $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/net/src/*.cpp))  \
                    $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/libuv/src/*.cpp)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix/*.cpp))
+                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix/*.cpp))\
+                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/stun/src/*.cpp))
+
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -32,7 +39,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \
                     $(LOCAL_PATH)/src/glad/include \
                     $(LOCAL_PATH)/src/mediaserver/src/base/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/include \
-                    $(LOCAL_PATH)/src/mediaserver/src/net/include
+                    $(LOCAL_PATH)/src/mediaserver/src/net/include \
+                    
 
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libmatrix/*.cc))
 
@@ -125,6 +133,10 @@ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/glad/src
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
+
+LOCAL_CPP_FEATURES := rtti exceptions c++17
+LOCAL_CPPFLAGS += -std=c++17
+
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := libglmark2-android
 LOCAL_STATIC_LIBRARIES := libMedia libglmark2-matrix libglmark2-png libglmark2-ideas libglmark2-jpeg libglad-egl libglad-glesv2
@@ -143,7 +155,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \
                     $(LOCAL_PATH)/src/mediaserver/src/net/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src \
-                    $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix
+                    $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix \
+                    $(LOCAL_PATH)/src/mediaserver/src/stun/include
 
 LOCAL_SRC_FILES := $(filter-out src/canvas% src/gl-state% src/native-state% src/main.cpp, \
                      $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/*.cpp))) \

@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 #include "base/process.h"
 #include "base/thread.h"
@@ -74,7 +84,7 @@ public:
             LTrace( "onexit", status);
         };
         proc.spawn();
-        uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+      //  uv_run(Application::uvGetLoop(), UV_RUN_DEFAULT);
 
     }
 
@@ -96,12 +106,27 @@ int main(int argc, char** argv) {
 
     // Process proc{ "ls", "-a"};
     std::string host = "www.google.com";
+    
+    
+     Application app;
+
+       
+
+       
     //std::string host = "8.8.8.8";
      
     PingThread pingThread(host);
 
     pingThread.start();
     
+    app.run();
+    
+     app.waitForShutdown([&](void*) {
+
+           
+        });
+           
+        
     sleep(3);
     LTrace( "stop");
     

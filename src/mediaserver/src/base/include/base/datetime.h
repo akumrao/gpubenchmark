@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 
 #ifndef base_DateTime_H
@@ -24,7 +34,7 @@ namespace base {
 /// Timestamps are UTC (Coordinated Universal Time)
 /// based and thus independent of the timezone
 /// in effect on the system.
-class Base_API Timestamp
+class  Timestamp
 {
 public:
     typedef std::int64_t TimeVal;    ///< monotonic UTC time value in microsecond resolution
@@ -107,7 +117,7 @@ private:
 //
 
 /// A class that represents time spans up to microsecond resolution.
-class Base_API Timespan
+class  Timespan
 {
 public:
     typedef Timestamp::TimeDiff TimeDiff;
@@ -253,7 +263,7 @@ private:
 ///   * http://en.wikipedia.org/wiki/Julian_day
 ///   * http://en.wikipedia.org/wiki/UTC
 ///   * http://en.wikipedia.org/wiki/ISO_8601
-class Base_API DateTime
+class  DateTime
 {
 public:
     /// Symbolic names for month numbers (1 to 12).
@@ -628,7 +638,7 @@ inline void swap(DateTime& d1, DateTime& d2)
 //
 
 /// This class provides information about the current timezone.
-class Base_API Timezone
+class  Timezone
 {
 public:
     /// Returns the offset of local time to UTC, in seconds.
@@ -690,7 +700,7 @@ public:
 /// since the time zone is unknown. Each of the constructors
 /// accepting a tzd parameter have been marked as deprecated and
 /// may be removed in a future revision.
-class Base_API LocalDateTime
+class  LocalDateTime
 {
 public:
     /// Creates a LocalDateTime with the current date/time
@@ -1041,7 +1051,7 @@ inline void swap(LocalDateTime& d1, LocalDateTime& d2)
 
 /// Definition of date/time formats and various
 /// constants used by DateTimeFormatter and DateTimeParser.
-class Base_API DateTimeFormat
+class  DateTimeFormat
 {
 public:
     /// predefined date formats
@@ -1128,7 +1138,7 @@ public:
 /// return a std::string containin the formatted value.
 ///    * append* functions append the formatted value to
 ///      an existing string.
-class Base_API DateTimeFormatter
+class  DateTimeFormatter
 {
 public:
     enum
@@ -1280,7 +1290,7 @@ public:
 /// additional specifier is supported: %r will parse a year given by either
 /// two or four digits. Years 69-00 are interpreted in the 20th century
 /// (1969-2000), years 01-68 in the 21th century (2001-2068).
-class Base_API DateTimeParser
+class  DateTimeParser
 {
 public:
     /// Parses a date and time in the given format from the given string.
@@ -1655,9 +1665,9 @@ inline std::string DateTimeFormatter::format(const Timestamp& timestamp,
 }
 
 
-inline std::string DateTimeFormatter::format(const DateTime& dateTime,
-                                             const std::string& fmt,
-                                             int timeZoneDifferential)
+inline std::string DateTimeFormatter::format(const DateTime& ,
+                                             const std::string& ,
+                                             int )
 {
     
     abort();
@@ -1685,10 +1695,10 @@ inline std::string DateTimeFormatter::format(const Timespan& timespan,
 }
 
 
-inline void DateTimeFormatter::append(std::string& str,
+inline void DateTimeFormatter::append(std::string& ,
                                       const Timestamp& timestamp,
-                                      const std::string& fmt,
-                                      int timeZoneDifferential)
+                                      const std::string& ,
+                                      int )
 {
     DateTime dateTime(timestamp);
     //append(str, dateTime, fmt, timeZoneDifferential); // arvind
@@ -1726,7 +1736,7 @@ inline std::string DateTimeFormatter::tzdRFC(int timeZoneDifferential)
 ///
 /// The Stopwatch uses the current system time, so if the
 /// system time changes the measured time will be incorrect.
-class Base_API Stopwatch
+class  Stopwatch
 {
 public:
     Stopwatch();

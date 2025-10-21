@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 #include "base/Timer.h"
 //#include "base/loop.h"
@@ -22,7 +32,7 @@ namespace base
     /* Instance methods. */
 
     Timer::Timer(Listener* listener, int timerID) : listener(listener),timerID(timerID) {
-       
+        
 
         this->uvHandle = new uv_timer_t;
         this->uvHandle->data = (void*) this;
@@ -39,14 +49,14 @@ namespace base
     }
 
     Timer::~Timer() {
-       
+        
 
         if (!this->closed)
             Close();
     }
 
     void Timer::Close() {
-       
+        
 
         if (this->closed)
             return;
@@ -56,26 +66,25 @@ namespace base
         uv_close(reinterpret_cast<uv_handle_t*> (this->uvHandle), static_cast<uv_close_cb> (onClose));
     }
 
-    void Timer::Start(uint64_t timeout, uint64_t repeat) {
-       
-
+    void Timer::Start(uint64_t timeout_ms, uint64_t repeat_ms) {
+        
         if (this->closed)
             LError("closed");
 
-        this->timeout = timeout;
-        this->repeat = repeat;
+        this->timeout = timeout_ms;
+        this->repeat = repeat_ms;
 
         if (uv_is_active(reinterpret_cast<uv_handle_t*> (this->uvHandle)) != 0)
             Stop();
 
-        int err = uv_timer_start(this->uvHandle, static_cast<uv_timer_cb> (onTimer), timeout, repeat);
+        int err = uv_timer_start(this->uvHandle, static_cast<uv_timer_cb> (onTimer),  this->timeout, this->repeat);
 
         if (err != 0)
             LError("uv_timer_start() failed: %s", uv_strerror(err));
     }
 
     void Timer::Stop() {
-       
+        
 
         if (this->closed)
             LError("closed");
@@ -87,7 +96,7 @@ namespace base
     }
 
     void Timer::Reset() {
-       
+        
 
         if (this->closed)
             LError("closed");
@@ -106,7 +115,7 @@ namespace base
     }
 
     void Timer::Restart() {
-       
+        
 
         if (this->closed)
             LError("closed");
@@ -122,10 +131,17 @@ namespace base
     }
 
     inline void Timer::OnUvTimer(int timerID) {
-       
+        
         // Notify the listener.
         if(this->listener)
-        this->listener->OnTimer(this,timerID);
+        {
+            // if(timerID > 0)
+            // this->listener->OnTimer1(this,timerID);
+            // else
+            // {
+             this->listener->OnTimer(this);
+            //}
+        }
         
         if(cb_timeout)
         cb_timeout();
