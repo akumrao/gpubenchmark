@@ -4,15 +4,16 @@ LOCAL_PATH := $(call my-dir)
 LOCAL_CPP_EXTENSION := .cc
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := ssl
+LOCAL_MODULE := libssl
 LOCAL_SRC_FILES := $(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/lib/libssl.a
 LOCAL_EXPORT_CFLAGS := -I$(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := crypto
+LOCAL_MODULE := libcrypto
 LOCAL_SRC_FILES := $(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/lib/libcrypto.a
 LOCAL_EXPORT_CFLAGS := -I$(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/include
+
 include $(PREBUILT_STATIC_LIBRARY)
 
 
@@ -35,7 +36,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/src/mediaserver/src/base/include \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src/ \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix \
                     $(LOCAL_PATH)/src/mediaserver/src/stun/include \
-                    /experiment/gpubenchmark/android/src/main/jni/src/mediaserver/src/openssl/build/openssl/arm64-v8a/include#
+                    $(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/include \
+                    $(LOCAL_PATH)/src/mediaserver/src/json/include
 
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/base/src/*.cpp)) \
                    $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/mediaserver/src/net/src/*.cpp))  \
@@ -72,58 +74,6 @@ include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := libglmark2-jpeg
-LOCAL_CFLAGS := -Werror -Wall -Wextra -Wno-error=attributes \
-                -Wno-error=unused-parameter -Wno-error=unused-function -Wno-error=unused-variable -g -DDEBUG=1
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/src/libjpeg-turbo/
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcapimin.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcapistd.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jccoefct.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jccolor.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcdctmgr.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jchuff.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcinit.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcmainct.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcmarker.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcmaster.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcomapi.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcparam.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcphuff.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcprepct.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jcsample.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdapimin.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdapistd.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdatadst.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdatasrc.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdcoefct.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdcolor.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jddctmgr.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdhuff.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdinput.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdmainct.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdmarker.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdmaster.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdmerge.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdphuff.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdpostct.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jdsample.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jerror.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jfdctflt.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jfdctfst.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jfdctint.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jidctflt.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jidctfst.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jidctint.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jidctred.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jmemmgr.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jmemnobs.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jquant1.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jquant2.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jutils.c)) \
-                   $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/libjpeg-turbo/jsimd_none.c))
-include $(BUILD_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
 
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_MODULE := libglmark2-ideas
@@ -156,7 +106,7 @@ LOCAL_CPPFLAGS += -std=c++17
 
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := libglmark2-android
-LOCAL_STATIC_LIBRARIES := libMedia libglmark2-matrix libglmark2-png libglmark2-ideas libglmark2-jpeg libglad-egl libglad-glesv2
+LOCAL_STATIC_LIBRARIES := libMedia libssl libcrypto libglmark2-matrix libglmark2-png libglmark2-ideas  libglad-egl libglad-glesv2
 LOCAL_CFLAGS := -DGPULOAD_DATA_PATH="" -DGPULOAD_VERSION="\"2021.12\"" \
                 -DGPULOAD_USE_GLESv2 -Wno-error -Wall -Wextra -g  -DDEBUG=1 \
                 -Wno-error=unused-parameter
@@ -165,7 +115,6 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \
                     $(LOCAL_PATH)/src/libmatrix \
                     $(LOCAL_PATH)/src/scene-ideas \
                     $(LOCAL_PATH)/src/scene-terrain \
-                    $(LOCAL_PATH)/src/libjpeg-turbo \
                     $(LOCAL_PATH)/src/libpng \
                     $(LOCAL_PATH)/src/glad/include \
                     $(LOCAL_PATH)/src/mediaserver/src/base/include \
@@ -174,7 +123,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/src \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src \
                     $(LOCAL_PATH)/src/mediaserver/src/libuv/src/unix \
                     $(LOCAL_PATH)/src/mediaserver/src/stun/include \
-                    /experiment/gpubenchmark/android/src/main/jni/src/mediaserver/src/openssl/build/openssl/arm64-v8a/include#
+                    $(LOCAL_PATH)/src/mediaserver/src/openssl/build/openssl/$(TARGET_ARCH_ABI)/include \
+                    $(LOCAL_PATH)/src/mediaserver/src/json/include
 
 LOCAL_SRC_FILES := $(filter-out src/canvas% src/gl-state% src/native-state% src/main.cpp, \
                      $(subst $(LOCAL_PATH)/,,$(wildcard $(LOCAL_PATH)/src/*.cpp))) \

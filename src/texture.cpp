@@ -94,13 +94,13 @@ Texture::load(const std::string &textureName, GLuint *pTexture, ...)
     ImageData image;
 
     if (desc->filetype() == TextureDescriptor::FileTypePNG) {
-        PNGReader reader(filename);
-        if (!image.load(reader))
+//        PNGReader reader(filename);
+//        if (!image.load(reader))
             return false;
     }
     else if (desc->filetype() == TextureDescriptor::FileTypeJPEG) {
-        JPEGReader reader(filename);
-        if (!image.load(reader))
+//        JPEGReader reader(filename);
+//        if (!image.load(reader))
             return false;
     }
 

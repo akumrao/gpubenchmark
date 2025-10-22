@@ -811,7 +811,7 @@ register_native_methods(JNIEnv* env, const char* className,
 {
     jclass clazz;
 
-    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "100.94.120.72"));
+//    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "100.94.120.72"));
     //LTrace("OnLoad");
 
     if(!pingThread)
@@ -819,7 +819,7 @@ register_native_methods(JNIEnv* env, const char* className,
     else
         return JNI_FALSE;
 
-    //pingThread->start();
+    pingThread->start();
 
     clazz = env->FindClass(className);
     if (clazz == NULL) {
