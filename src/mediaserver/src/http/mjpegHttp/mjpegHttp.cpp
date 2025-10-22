@@ -1,3 +1,13 @@
+/* This file is part of mediaserver. A webrtc sfu server.
+ * Copyright (C) 2018 Arvind Umrao <akumrao@yahoo.com> & Herman Umrao<hermanumrao@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ */
+
 
 #include "base/test.h"
 #include "base/logger.h"
@@ -15,6 +25,8 @@ using namespace base::test;
 
 #include "opencv2/opencv.hpp"
 /// apt-get install libopencv-dev
+
+//browse http://localhost:8888/
 
 using namespace cv;
 
@@ -201,10 +213,20 @@ public:
 
     ServerResponder* createResponder(net::HttpBase* conn) {
         
-          auto& request = conn->_request;
+        auto& request = conn->_request;
 
-            // Log incoming requests
-          STrace << "Incoming connection from " << ": URI:\n" << request.getURI() << ": Request:\n" << request << std::endl;
+        STrace << "Incoming connection from " << ": Request:\n" << request << std::endl;
+
+        if( !request.has("Host"))
+        {
+
+            SError << "Incoming connection does not have host "  << request.getMethod() << " uri: <<  " << request.getURI() << std::endl;
+
+            return new BasicResponder(conn);
+         }
+
+        SDebug << "Incoming connection from: " << request.getHost() << " method: " << request.getMethod() << " uri: <<  " << request.getURI() << std::endl;
+
 
         if( request.getURI() == "multipart")
             return new MultiPartResponder(conn);
