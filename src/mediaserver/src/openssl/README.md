@@ -1,5 +1,7 @@
 
+Steps to build openssl for android and arm64 on linux64
 
+run my-build.sh
 
 NDK OS Variant	Host Tag
 macOS	darwin-x86_64

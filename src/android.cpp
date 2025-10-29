@@ -645,45 +645,18 @@ Java_org_gpu_glload_native_init(JNIEnv* env, jclass clazz,
         get_args_from_file(arguments_file, argc, argv);
     }
 
-    Options::parse_args(argc, argv);
-    release_args(argc, argv);
 
-    /* Get the log file path and open the log file */
-    const char *log_file_c_str = env->GetStringUTFChars(log_file, 0);
-    if (log_file_c_str) {
-        g_log_extra = new std::ofstream(log_file_c_str, std::ios::binary);
-        env->ReleaseStringUTFChars(log_file, log_file_c_str);
-    }
-
-    /* Force reuse of EGL/GL context */
-    Options::reuse_context = true;
-
-    Log::init("glmark2", Options::show_debug, g_log_extra);
     Util::android_set_asset_manager(AAssetManager_fromJava(env, asset_manager));
 
     //    g_canvas = new CanvasAndroid(g_benchmark_collection->config.widthCanvas, g_benchmark_collection->config.heightCanvas);
     //g_canvas = new CanvasAndroid(1000000, 1000000);
-    g_canvas = new CanvasAndroid(100, 100);
-    g_canvas->init();
+//    g_canvas = new CanvasAndroid(100, 100);
+//    g_canvas->init();
+//
+//    Log::info("glmark2 %s\n", GPULOAD_VERSION);
+//    g_canvas->print_info();
 
-    Log::info("glmark2 %s\n", GPULOAD_VERSION);
-    g_canvas->print_info();
 
-    /* Add and register scenes */
-    g_scene_collection = new SceneCollection(*g_canvas);
-    g_scene_collection->register_scenes();
-
-    g_benchmark_collection = new BenchmarkCollection();
-    g_benchmark_collection->populate_from_options();
-
-    if (g_benchmark_collection->needs_decoration()) {
-        g_loop = new MainLoopDecorationAndroid(*g_canvas,
-                                               g_benchmark_collection->benchmarks(),g_benchmark_collection->config);
-    }
-    else {
-        g_loop = new MainLoopAndroid(*g_canvas,
-                                     g_benchmark_collection->benchmarks() ,g_benchmark_collection->config );
-    }
 }
 
 void
@@ -705,7 +678,7 @@ Java_org_gpu_glload_native_done(JNIEnv* env)
     static_cast<void>(env);
 
     delete g_loop;
-    delete g_benchmark_collection;
+    //delete g_benchmark_collection;
     delete g_scene_collection;
     delete g_canvas;
     delete g_log_extra;
@@ -716,10 +689,10 @@ Java_org_gpu_glload_native_render(JNIEnv* env)
 {
     static_cast<void>(env);
 
-    if (!g_loop->step()) {
-        Log::info("GLload Score: %u\n", g_loop->score());
-        return false;
-    }
+//    if (!g_loop->step()) {
+//        Log::info("GLload Score: %u\n", g_loop->score());
+//        return false;
+//    }
 
     return true;
 }
@@ -736,7 +709,7 @@ Java_org_gpu_glload_native_scoreConfig(JNIEnv* env, jclass clazz,
     gl_visual_config_from_jobject(env, jvc, vc);
     gl_visual_config_from_jobject(env, jtarget, target);
 
-    return vc.match_score(target);
+//    return vc.match_score(target);
 }
 
 jobjectArray
